@@ -60,32 +60,36 @@ export default function SuccessStoriesPage() {
             ...formattedFilters.filter,
             ...(debouncedValue !== ""
               ? {
-                  $or: [
-                    {
-                      studentName: {
-                        $like: debouncedValue,
-                      },
-                      "course.name": {
-                        $like: debouncedValue,
-                      },
-                      company: {
-                        $like: debouncedValue,
-                      },
-                      position: {
-                        $like: debouncedValue,
-                      },
+                $or: [
+                  {
+                    studentName: {
+                      $like: debouncedValue,
                     },
-                  ],
-                }
+                    "course.name": {
+                      $like: debouncedValue,
+                    },
+                    company: {
+                      $like: debouncedValue,
+                    },
+                    position: {
+                      $like: debouncedValue,
+                    },
+                  },
+                ],
+              }
               : {}),
           },
           ...(sorting?.[0]?.id
             ? {
-                sort: `${sorting?.[0]?.id}:${
-                  sorting?.[0]?.desc ? "DESC" : "ASC"
-                }`,
-              }
-            : {}),
+              sort: [
+                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+              ],
+            }
+            : {
+              sort: [
+                'createdAt:desc',
+              ],
+            }),
         },
       })
     );

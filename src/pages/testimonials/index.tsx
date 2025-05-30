@@ -60,23 +60,27 @@ export default function TestimonialPage() {
             ...formattedFilters.filter,
             ...(debouncedValue !== ""
               ? {
-                  $or: [
-                    {
-                      name: {
-                        $like: debouncedValue,
-                      },
+                $or: [
+                  {
+                    name: {
+                      $like: debouncedValue,
                     },
-                  ],
-                }
+                  },
+                ],
+              }
               : {}),
           },
           ...(sorting?.[0]?.id
             ? {
-                sort: `${sorting?.[0]?.id}:${
-                  sorting?.[0]?.desc ? "DESC" : "ASC"
-                }`,
-              }
-            : {}),
+              sort: [
+                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+              ],
+            }
+            : {
+              sort: [
+                'createdAt:desc',
+              ],
+            }),
         },
       })
     );
