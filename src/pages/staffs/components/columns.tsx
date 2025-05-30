@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
+import moment from "moment";
 import { Link, useNavigate } from "react-router-dom";
 import { DataTableColumnHeader } from "./data-table-column-header";
 
@@ -65,7 +66,7 @@ export const columns: ColumnDef<Staff>[] = [
       return (
         <button
           className="flex items-center font-bold"
-          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Email
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -81,7 +82,7 @@ export const columns: ColumnDef<Staff>[] = [
       return (
         <button
           className="flex items-center font-bold"
-          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Phone
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -93,18 +94,18 @@ export const columns: ColumnDef<Staff>[] = [
 
   {
     id: "user.dob",
-    accessorKey: "dob",
+    accessorKey: "age",
     header: ({ column }) => {
       return (
         <DataTableColumnHeader
           column={column}
-          title="DOB"
+          title="Age"
           className="font-bold"
         />
       );
     },
     cell: ({ row }) => {
-      return <div>{row.original.dob}</div>;
+      return <div>{moment().diff(moment(row?.original?.dob), "years")} years</div>;
     },
   },
 
@@ -115,7 +116,7 @@ export const columns: ColumnDef<Staff>[] = [
       return (
         <button
           className="flex items-center font-bold"
-          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Gender
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
