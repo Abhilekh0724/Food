@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
+import moment from "moment";
 import { Link, useNavigate } from "react-router-dom";
 import { DataTableColumnHeader } from "./data-table-column-header";
 
@@ -132,18 +133,18 @@ export const columns: ColumnDef<Donor>[] = [
 
   {
     id: "donor.dob",
-    accessorKey: "dob",
+    accessorKey: "age",
     header: ({ column }) => {
       return (
         <DataTableColumnHeader
           column={column}
-          title="DOB"
+          title="Age"
           className="font-bold"
         />
       );
     },
     cell: ({ row }) => {
-      return <div>{row.original.dob}</div>;
+      return <div>{moment().diff(moment(row?.original?.dob), "years")} years</div>;
     },
   },
 
