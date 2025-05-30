@@ -55,7 +55,7 @@ export default function BloodStockPage() {
     const result = { ...formattedFilters.filter };
 
 
-    const statusFilter = columnFilters.find(cF => cF.id === 'status')
+    const statusFilter: any = columnFilters.find(cF => cF.id === 'status')
 
     const or: any = []
     if (statusFilter?.id === 'status') {
