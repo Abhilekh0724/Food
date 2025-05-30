@@ -1,5 +1,5 @@
 import { Overview } from "@/components/dashboard/overview";
-import { RecentSales } from "@/components/dashboard/recent-sales";
+import { RecentBloodRequests } from "@/components/dashboard/recent-blood-requests";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/context/auth-context";
 import { getDashboardStats } from "@/store/features/dashboard-slice";
 import { dispatch, useSelector } from "@/store/store";
 import { Popover } from "@radix-ui/react-popover";
@@ -25,6 +26,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function DashboardPage() {
+  const { user } = useAuth()
   const [date, setDate] = useState<Date>(new Date());
 
   const [open, setOpen] = useState(false);
@@ -35,14 +37,13 @@ export default function DashboardPage() {
   const stats = useSelector((state) => state.dashboard.stats);
 
   useEffect(() => {
-    // dispatch(
-    //   getDashboardStats({
-    //     params: {
-    //       year: date.getFullYear(),
-    //     },
-    //   })
-    // );
-  }, [date]);
+    dispatch(
+      getDashboardStats({
+        year: date.getFullYear(),
+        user
+      })
+    );
+  }, [date, user]);
 
   return (
     <>
@@ -62,7 +63,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {parseFloat(stats?.totalRevenue).toLocaleString()}
+                {parseFloat(stats?.staffsCount).toLocaleString()}
               </div>
             </CardContent>
           </Card>
@@ -75,7 +76,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {stats?.allEnrollmentsCount}
+                {stats?.donorsCount}
               </div>
             </CardContent>
           </Card>
@@ -89,13 +90,15 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {stats?.ongoingEnrollmentsCount}
+                {stats?.brCount}
               </div>
             </CardContent>
           </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
+          <Card className="col-span-4" style={{
+            height: 'fit-content'
+          }}>
             <div className="flex items-center mb-10 justify-between pr-4">
               <CardHeader>
                 <CardTitle>Monthwise blood requests of a year</CardTitle>
@@ -139,13 +142,16 @@ export default function DashboardPage() {
           </Card>
           <Card className="col-span-3">
             <CardHeader>
-              <CardTitle>Recent Blood Requests</CardTitle>
-              <CardDescription>
-                <Link to={"/enquiry"}>View All</Link>
-              </CardDescription>
+              <CardTitle className="flex justify-between items-center">
+                <div>
+                  Recent Blood Requests
+                </div>
+                <Link className="text-sm text-primary" to={"/blood-requests"}>View All</Link>
+              </CardTitle>
+
             </CardHeader>
             <CardContent>
-              <RecentSales />
+              <RecentBloodRequests />
             </CardContent>
           </Card>
         </div>

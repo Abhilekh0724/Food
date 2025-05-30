@@ -5,6 +5,22 @@ import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 export function Overview() {
   const stats = useSelector((state) => state.dashboard.stats);
 
+  // Calculate unique Y-axis ticks based on data to avoid repetition
+  const getYTicks = (data: any) => {
+    if (!data || !data.length) return [];
+    const values = data.map((item: any) => item.total);
+    const min = Math.floor(Math.min(...values));
+    const max = Math.ceil(Math.max(...values));
+    const step = Math.ceil((max - min) / 5); // Adjust step for ~5 ticks
+    const ticks = [];
+    for (let i = min; i <= max; i += step) {
+      ticks.push(i);
+    }
+    return ticks;
+  };
+
+  const yTicks = getYTicks(stats?.monthlyRequests);
+
   return (
     <ChartContainer
       config={{
@@ -16,7 +32,7 @@ export function Overview() {
       className="h-[350px]"
     >
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={stats?.fullYearRevenue}>
+        <LineChart data={stats?.monthlyRequests}>
           <XAxis
             dataKey="name"
             stroke="#888888"
@@ -29,7 +45,8 @@ export function Overview() {
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `$${value}`}
+            tickFormatter={(value) => Math.floor(value).toString()} // Convert to string
+            ticks={yTicks} // Use calculated ticks to avoid repetition
           />
           <ChartTooltip />
           <Line
