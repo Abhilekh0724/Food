@@ -50,7 +50,7 @@ export default function App() {
               path="/"
               element={
                 <ProtectedRoute>
-                  {user?.organizerProfile?.type === 'Community' ? <BloodBankDashboardPage /> : <CommunityDashboardPage />}
+                  {user?.organizerProfile?.type === 'Blood Bank' ? <BloodBankDashboardPage /> : <CommunityDashboardPage />}
                 </ProtectedRoute>
               }
             />
