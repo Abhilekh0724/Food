@@ -123,6 +123,7 @@ export default function StaffPage() {
   const filteredData = useMemo(() => {
     return (data?.data?.map((d) => ({
       id: d?.id,
+      userId: d?.attributes?.user?.data?.id,
       username: d?.attributes?.user?.data?.attributes?.username,
       email: d?.attributes?.user?.data?.attributes?.email,
       phone: d?.attributes?.user?.data?.attributes?.phone,

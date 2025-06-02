@@ -120,29 +120,29 @@ const AddBasicProfile = ({ isEdit = false }: { isEdit?: boolean }) => {
 
     isEdit && id
       ? dispatch(
-          updateStaff({
-            data: formData,
-            navigate,
-            id,
-            actionBy: user?.id,
-          })
-        )
+        updateStaff({
+          data: formData,
+          navigate,
+          id: singleStaff?.data?.attributes?.user?.data?.id,
+          actionBy: user?.id,
+        })
+      )
       : dispatch(
-          createStaff({
-            data: formData,
-            params: {
-              populate: {
-                avatar: true,
-              },
+        createStaff({
+          data: formData,
+          params: {
+            populate: {
+              avatar: true,
             },
-            staff: {
-              organizer: user?.organizerProfile?.id,
-              role: "staff",
-            },
-            navigate,
-            actionBy: user?.id,
-          })
-        );
+          },
+          staff: {
+            organizer: user?.organizerProfile?.id,
+            role: "staff",
+          },
+          navigate,
+          actionBy: user?.id,
+        })
+      );
   };
 
   useEffect(() => {
@@ -167,8 +167,8 @@ const AddBasicProfile = ({ isEdit = false }: { isEdit?: boolean }) => {
         gender:
           singleStaff?.data?.attributes?.user?.data?.attributes?.gender || "",
         bloodGroup:
-          singleStaff?.data?.attributes?.user?.data?.attributes?.bloodGroup
-            ?.data?.id || "",
+          String(singleStaff?.data?.attributes?.user?.data?.attributes?.bloodGroup
+            ?.data?.id) || "",
         avatar: (() => {
           const dataTransfer = new DataTransfer();
           if (
@@ -468,7 +468,7 @@ const AddBasicProfile = ({ isEdit = false }: { isEdit?: boolean }) => {
                                     className="relative p-2 border rounded-lg bg-white shadow-md w-full"
                                   >
                                     {preview?.startsWith("blob:") ||
-                                    preview?.startsWith("http") ? (
+                                      preview?.startsWith("http") ? (
                                       <div className="relative w-full h-full rounded-md overflow-hidden">
                                         <img
                                           src={preview}

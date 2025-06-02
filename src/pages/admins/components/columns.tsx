@@ -36,8 +36,8 @@ const ActionsCell = ({ admin }: { admin: Admin }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigate(`/users/${admin?.id}`)}>
-          view
+        <DropdownMenuItem onClick={() => navigate(`/admins/${admin?.id}`)}>
+          Edit
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -56,7 +56,10 @@ export const columns: ColumnDef<Admin>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Link to={`/staffs/${row.original.id}`}>{row.original.username}</Link>
+      // <Link to={`/admins/${row.original.id}`}>{row.original.username}</Link>
+      <span>
+        {row.original.username}
+      </span>
     ),
   },
 

@@ -193,7 +193,7 @@ export const deleteStaff = createAsyncThunk(
   DELETE_STAFFS,
   async ({ id, onClose }: ParamsI, { rejectWithValue }) => {
     try {
-      await api.delete<ApiResponseI>(`staffs/${id}`);
+      await api.delete<ApiResponseI>(`organizer-members/${id}`);
       return { id, onClose };
     } catch (error: any) {
       return rejectWithValue(
