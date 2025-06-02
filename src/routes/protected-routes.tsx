@@ -1,4 +1,5 @@
 // ProtectedRoute.tsx
+import Loader from "@/components/common/loader";
 import { useAuth } from "@/context/auth-context";
 import LoginPage from "@/pages/auth/login";
 import { fetchBgs, fetchRoles } from "@/store/features/common-slice";
@@ -45,9 +46,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
+      <Loader message="Setting Up" />
     );
   }
 
