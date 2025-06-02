@@ -78,7 +78,7 @@ export function DataTableToolbar<TData>({
           <Download className="mr-2 h-4 w-4" />
           CSV
         </Button>
-        <DataTableViewOptions table={table} />
+        {/* <DataTableViewOptions table={table} /> */}
       </div>
     </div>
   );
