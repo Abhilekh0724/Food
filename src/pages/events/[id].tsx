@@ -183,33 +183,36 @@ export default function EventDetailPage() {
                     <TableHead>Blood Group</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {eventDetail?.attributes?.eventJoiners?.data?.map((donor: any, index: number) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className="bg-red-100 text-red-700">
-                              {donor?.attributes?.user?.data?.attributes?.username
-                                .split(" ")
-                                .map((n: any) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{donor?.attributes?.user?.data?.attributes?.firstName} {donor?.attributes?.user?.data?.attributes?.lastName}</p>
-                            <p className="text-xs text-muted-foreground">{donor?.id}</p>
+                {eventDetail?.attributes?.eventJoiners?.data?.length ?
+                  <TableBody>
+
+                    {eventDetail?.attributes?.eventJoiners?.data?.map((donor: any, index: number) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback className="bg-red-100 text-red-700">
+                                {donor?.attributes?.user?.data?.attributes?.username
+                                  .split(" ")
+                                  .map((n: any) => n[0])
+                                  .join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium">{donor?.attributes?.user?.data?.attributes?.firstName} {donor?.attributes?.user?.data?.attributes?.lastName}</p>
+                              <p className="text-xs text-muted-foreground">{donor?.id}</p>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-xs font-medium text-red-700">
-                          {donor?.attributes?.user?.data?.attributes?.bloodGroup?.data?.attributes?.name}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                        </TableCell>
+                        <TableCell>
+                          <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-xs font-medium text-red-700">
+                            {donor?.attributes?.user?.data?.attributes?.bloodGroup?.data?.attributes?.name}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  : <div className="flex justify-center m-10">No Data</div>}
               </Table>
             </div>
           </CardContent>

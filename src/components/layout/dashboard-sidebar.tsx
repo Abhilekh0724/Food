@@ -170,19 +170,6 @@ const bloodBankSidebarNavItems = [
     href: "/blood-stocks",
     icon: Droplets,
   },
-  // {
-  //   type: "item",
-  //   title: "Donors",
-  //   href: "/blood-bank-donors",
-  //   icon: Users,
-  // },
-
-  // {
-  //   type: "item",
-  //   title: "Usage and Wastages",
-  //   href: "/usage-and-wastage",
-  //   icon: BarChart,
-  // },
 
   {
     type: "item",
@@ -191,12 +178,17 @@ const bloodBankSidebarNavItems = [
     icon: Repeat,
   },
 
-  // {
-  //   type: "item",
-  //   title: "Alerts",
-  //   href: "/blood-donors",
-  //   icon: AlertTriangle,
-  // },
+  {
+    type: "heading",
+    title: "Settings",
+  },
+  {
+    type: "item",
+    title: "Settings",
+    icon: Settings,
+    href: "/settings",
+    items: [],
+  },
 
   {
     type: "heading",
