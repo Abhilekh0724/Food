@@ -4,6 +4,7 @@ export interface metaI {
   pagination: {
     total: number;
     pageSize: number;
+    page?: number;
     currentPage: number;
     nextPage: number | null;
     prevPage: number | null;

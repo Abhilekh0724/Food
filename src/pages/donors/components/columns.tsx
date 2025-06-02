@@ -15,6 +15,7 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 export type Donor = {
   id: string;
   donorId: string;
+  donor_id: string;
   createdAt: string;
   username: string;
   email: string;
@@ -38,8 +39,8 @@ const ActionsCell = ({ donor }: { donor: Donor }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigate(`/users/${donor?.id}`)}>
-          view
+        <DropdownMenuItem onClick={() => navigate(`/donors/edit/${donor?.donor_id}`)}>
+          Edit
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -61,7 +62,7 @@ export const columns: ColumnDef<Donor>[] = [
       );
     },
     cell: ({ row }) => (
-      <Link to={`/members/${row.original.id}`}>{row.original.donorId}</Link>
+      <Link to={`/donors/${row.original.id}`}>{row.original.donorId}</Link>
     ),
   },
 
@@ -78,7 +79,7 @@ export const columns: ColumnDef<Donor>[] = [
       );
     },
     cell: ({ row }) => (
-      <Link to={`/members/${row.original.id}`}>{row.original.username}</Link>
+      <Link to={`/donors/${row.original.id}`}>{row.original.username}</Link>
     ),
   },
 

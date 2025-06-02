@@ -52,7 +52,7 @@ export const register = async (
 export const fetchUser = async (): Promise<User> => {
   const response = await api.get("/users/me", {
     params: {
-      populate: "*",
+      populate: "avatar,organizerProfile.address,organizerProfile.avatar,currentAddress,organizerMembers",
     },
   });
   return response.data;

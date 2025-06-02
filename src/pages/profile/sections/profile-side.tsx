@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { devLog } from "@/util/logger";
 import { MapPin, User } from "lucide-react";
 
 const ProfileSide = ({ data }: { data: any }) => {
@@ -18,6 +19,8 @@ const ProfileSide = ({ data }: { data: any }) => {
       day: "numeric",
     });
   };
+
+  devLog(data, "datatata")
 
   return (
     <Card>
@@ -60,7 +63,7 @@ const ProfileSide = ({ data }: { data: any }) => {
                 Donation Status
               </span>
               {data?.donorProfile?.lastDonationDate &&
-              new Date().getTime() -
+                new Date().getTime() -
                 new Date(data?.donorProfile?.lastDonationDate).getTime() >
                 90 * 24 * 60 * 60 * 1000 ? (
                 <Badge variant="outline" className="bg-green-500 text-white">
@@ -73,17 +76,17 @@ const ProfileSide = ({ data }: { data: any }) => {
             <div className="text-sm">
               {data?.donorProfile?.lastDonationDate
                 ? new Date().getTime() -
-                    new Date(data.donorProfile.lastDonationDate).getTime() >
+                  new Date(data.donorProfile.lastDonationDate).getTime() >
                   90 * 24 * 60 * 60 * 1000
                   ? "Eligible for donation!"
                   : `Next eligible donation date: ${new Date(
-                      new Date(data.donorProfile.lastDonationDate).getTime() +
-                        90 * 24 * 60 * 60 * 1000
-                    ).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}`
+                    new Date(data.donorProfile.lastDonationDate).getTime() +
+                    90 * 24 * 60 * 60 * 1000
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}`
                 : "Eligible for donation!"}
             </div>
           </div>

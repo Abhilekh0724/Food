@@ -18,6 +18,7 @@ import testimonialSlice from "./features/testimonial-slice";
 import bloodPouchSlice from "./features/blood-pouch-slice";
 import organizerSlice from "./features/organizer-slice";
 import bloodTransferSlice from "./features/blood-transfer-slice";
+import eventSlice from "./features/event-slice";
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +42,7 @@ const rootReducer = combineReducers({
   bloodPouch: bloodPouchSlice,
   organizer: organizerSlice,
   bloodTransfer: bloodTransferSlice,
+  event: eventSlice,
 });
 
 // Infer the `RootState` type from the rootReducer

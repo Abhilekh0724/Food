@@ -31,6 +31,7 @@ import {
   HelpingHand,
   LayoutDashboard,
   Repeat,
+  Settings,
   SquareM,
   UserRoundCog,
   Users2Icon,
@@ -103,6 +104,18 @@ const communitySidebarNavItems = [
     title: "Events",
     icon: UserRoundCog,
     href: "/community/events",
+    items: [],
+  },
+
+  {
+    type: "heading",
+    title: "Settings",
+  },
+  {
+    type: "item",
+    title: "Settings",
+    icon: Settings,
+    href: "/settings",
     items: [],
   },
 

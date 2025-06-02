@@ -1,3 +1,4 @@
+import Loader from "@/components/common/loader";
 import { fetchSingleFollowers } from "@/store/features/follower-slice";
 import { dispatch, useSelector } from "@/store/store";
 import { useEffect } from "react";
@@ -8,6 +9,7 @@ const ProfileDetailPage = () => {
   const { id } = useParams();
 
   const user = useSelector((state) => state.follower.singleData);
+  const fetchLoading = useSelector((state) => state.follower.fetchLoading);
 
   useEffect(() => {
     dispatch(
@@ -20,7 +22,9 @@ const ProfileDetailPage = () => {
     );
   }, [id]);
 
-  return <BloodDonorProfile data={user} />;
+  return <>
+    {fetchLoading ? <Loader /> : <BloodDonorProfile data={user} />}
+  </>;
 };
 
 export default ProfileDetailPage;

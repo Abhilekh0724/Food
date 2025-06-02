@@ -2,10 +2,9 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import DistrictSelect from "./sections/districts";
-import { PasswordForm } from "./sections/password-form";
 import { ProfileForm } from "./sections/profile-form";
 
-export default function ProfilePage() {
+export default function OrganizerSettingsPage() {
 
   return (
     <div className="relative">
@@ -18,20 +17,13 @@ export default function ProfilePage() {
       </Link>
       <div className="mt-4 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Organization Profile</h1>
           <p className="text-muted-foreground">
-            Manage your profile settings and change your password.
+            Manage your organization profile.
           </p>
         </div>
         <Separator />
-        <div className="grid gap-10 md:grid-cols-2">
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight">
-              Personal Information
-            </h2>
-          </div>
-          <ProfileForm />
-        </div>
+        <ProfileForm />
         <Separator />
         <div className="grid gap-10 md:grid-cols-2">
           <div>
@@ -40,17 +32,6 @@ export default function ProfilePage() {
             </h2>
           </div>
           <DistrictSelect />
-        </div>
-        <Separator />
-
-        <div className="grid gap-10 md:grid-cols-2">
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight">Password</h2>
-            <p className="text-sm text-muted-foreground">
-              Change your password to keep your account secure.
-            </p>
-          </div>
-          <PasswordForm />
         </div>
       </div>
     </div>

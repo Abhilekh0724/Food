@@ -124,7 +124,8 @@ export default function DonorPage() {
   // Memoize the data for the table to update properly when filters change
   const filteredData = useMemo(() => {
     return (data?.data?.map((d) => ({
-      id: d?.id,
+      id: d?.attributes?.donor?.data?.id,
+      donor_id: d?.id,
       donorId: d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes?.donorId,
       username: d?.attributes?.donor?.data?.attributes?.username,
       email: d?.attributes?.donor?.data?.attributes?.email,

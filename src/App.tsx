@@ -24,9 +24,11 @@ import DashboardPage from "./pages/dashboard";
 import DonorPage from "./pages/donors";
 import AddDonorPage from "./pages/donors/add/add";
 import EventsPage from "./pages/events";
+import AddEventPage from "./pages/events/add/add";
 import EventDetailPage from "./pages/events/[id]";
 import MemberPage from "./pages/followers";
 import ProfileDetailPage from "./pages/profile";
+import OrganizerSettingsPage from "./pages/settings";
 import EnrollPage from "./pages/staffs";
 import { default as AddStaffPage } from "./pages/staffs/add/add";
 import GuestRoutes from "./routes/guest-routes";
@@ -57,7 +59,7 @@ export default function App() {
               <Route path="/staffs" element={<EnrollPage />} />
               <Route path="/staffs/add" element={<AddStaffPage />} />
               <Route
-                path="/staffs/:id"
+                path="/staffs/edit/:id"
                 element={<AddStaffPage isEdit={true} />}
               />
 
@@ -71,9 +73,9 @@ export default function App() {
 
               <Route path="/donors" element={<DonorPage />} />
               <Route path="/donors/add" element={<AddDonorPage />} />
-
+              <Route path="/donors/:id" element={<ProfileDetailPage />} />
               <Route
-                path="/donors/:id"
+                path="/donors/edit/:id"
                 element={<AddDonorPage isEdit={true} />}
               />
 
@@ -93,12 +95,16 @@ export default function App() {
               />
 
               <Route path="/community/events" element={<EventsPage />} />
+              <Route path="/community/events/add" element={<AddEventPage />} />
 
               <Route
                 path="/community/events/:id"
-                element={<EventDetailPage params={{
-                  id: '1'
-                }} />}
+                element={<EventDetailPage />}
+              />
+
+              <Route
+                path="/community/events/edit/:id"
+                element={<AddEventPage isEdit={true} />}
               />
 
               {/* TODO: blood bank */}
@@ -120,6 +126,15 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <OrganizerSettingsPage />
                   </ProtectedRoute>
                 }
               />

@@ -98,7 +98,11 @@ export default function EnrollPage() {
                 `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
               ],
             }
-            : {}),
+            : {
+              sort: [
+                'createdAt:desc',
+              ],
+            }),
         },
       })
     );

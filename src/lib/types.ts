@@ -51,6 +51,18 @@ export interface User {
     workingDistricts: string | null;
     website: string | null;
     verificationNotes: string | null;
+    address: {
+      country: string;
+      district: string;
+      municipality: string;
+      zipCode: string;
+      streetAddress: string;
+      city: string;
+      wardNo: string;
+    };
+    avatar: {
+      url: string;
+    };
   };
 
   avatar: {
@@ -117,6 +129,60 @@ export interface BloodRequest {
     };
 
     acceptors: {
+      data: {
+        id: string;
+        attributes: {
+          acceptor: {
+            data: {
+              id: string;
+              attributes: User;
+            };
+          };
+          donatedUnits: number;
+          acceptedAt: string;
+          status: string;
+        };
+      }[];
+    };
+  };
+}
+
+export interface EventsI {
+  id: string;
+  attributes: {
+    id: string;
+    name: string;
+    description: number;
+    mapLocation: any;
+    eventDateTime: string;
+    noOfParticipants: number;
+    status: string;
+    active: boolean;
+    verificationNotes: any;
+    createdAt: string;
+    updatedAt: string;
+    featureImage: {
+      data: {
+        id: string;
+        attributes: {
+          name: string;
+          url: string;
+        };
+      };
+    };
+
+    address: {
+      id: string
+      country: string
+      district: string
+      municipality: string
+      zipCode: string
+      streetAddress: string
+      city: string
+      wardNo: string
+    };
+
+    eventJoiners: {
       data: {
         id: string;
         attributes: {
