@@ -45,6 +45,7 @@ export default function StaffPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
   // Effect to handle filter changes
@@ -107,7 +108,9 @@ export default function StaffPage() {
             }),
         },
       })
-    );
+    ).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     columnFilters,
@@ -181,14 +184,17 @@ export default function StaffPage() {
           <Input
             placeholder="Search staffs by username, email and phone ..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setIsSearchLoading(true); // Start loading when typing or clearing
+            }}
             className="w-full"
           />
           <Button onClick={() => navigate("/staffs/add")}>Add Staff</Button>
         </div>
       </div>
 
-      {fetchLoading ? (
+      {fetchLoading || isSearchLoading ? (
         <Loader />
       ) : (
         <StaffsTable

@@ -17,8 +17,8 @@ export function DashboardHeader() {
   const { logout, user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-[3.5rem] items-center">
+    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex px-8 h-[3.5rem] items-center">
         <div className="flex items-center gap-2">
           {/* <Avatar className="h-8 w-8">
             <AvatarFallback>

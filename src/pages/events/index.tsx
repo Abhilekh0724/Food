@@ -28,7 +28,7 @@ export default function EventsPage() {
   const [search, setSearch] = useState<string>("");
   const [sort, setSort] = useState<string>("desc");
   const [tab, setTab] = useState<'unverified' | "verified" | 'all' | 'upcoming' | 'completed' | 'active'>("upcoming");
-
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
 
@@ -154,7 +154,9 @@ export default function EventsPage() {
         populate: '*'
       }
 
-    }))
+    })).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    })
   }, [pagination, user?.organizerProfile?.id, debouncedValue, sort, tab])
 
 
@@ -197,7 +199,10 @@ export default function EventsPage() {
                 <div className="relative flex-1">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                   <Input
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={(event) => {
+                      setSearch(event.target.value);
+                      setIsSearchLoading(true); // Start loading when typing or clearing
+                    }}
                     placeholder="Search events by title or description or location..." className="pl-8" />
                 </div>
                 <div className="flex gap-2">
@@ -214,7 +219,7 @@ export default function EventsPage() {
               </div>
 
               <TabsContent value={tab} className="space-y-4">
-                {fetchLoading ? <Loader /> : <>
+                {fetchLoading || isSearchLoading ? <Loader /> : <>
                   {events?.data?.length ? <>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                       {

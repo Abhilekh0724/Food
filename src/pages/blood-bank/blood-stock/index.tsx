@@ -42,6 +42,7 @@ export default function BloodStockPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
 
@@ -208,7 +209,9 @@ export default function BloodStockPage() {
             }),
         },
       })
-    );
+    ).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    });
   }, [
     columnFilters,
     dispatch,
@@ -292,7 +295,10 @@ export default function BloodStockPage() {
           <Input
             placeholder="Search stocks by pouchID and donorID ..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setIsSearchLoading(true); // Start loading when typing or clearing
+            }}
             className="w-full"
           />
           <Button onClick={() => navigate("/blood-stocks/add")}>Add Stock</Button>
@@ -305,7 +311,7 @@ export default function BloodStockPage() {
         <UsageWastageStats />
       </div>
 
-      {fetchLoading ? (
+      {fetchLoading || isSearchLoading ? (
         <Loader />
       ) : (
         <BloodStockTable

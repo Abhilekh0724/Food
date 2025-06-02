@@ -45,6 +45,7 @@ export default function EnrollPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
   // Effect to handle filter changes
@@ -105,7 +106,9 @@ export default function EnrollPage() {
             }),
         },
       })
-    );
+    ).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    });
   }, [
     columnFilters,
     dispatch,
@@ -177,14 +180,17 @@ export default function EnrollPage() {
           <Input
             placeholder="Search admins ..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setIsSearchLoading(true); // Start loading when typing or clearing
+            }}
             className="w-full"
           />
           <Button onClick={() => navigate("/admins/add")}>Add Admin</Button>
         </div>
       </div>
 
-      {fetchLoading ? (
+      {fetchLoading || isSearchLoading ? (
         <Loader />
       ) : (
         <AdminsTable

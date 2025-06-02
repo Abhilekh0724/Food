@@ -161,7 +161,7 @@ export default function AddEventPage({ isEdit = false }: { isEdit?: boolean }) {
   devLog(form.getValues())
 
   return (
-    <div className="container mx-auto">
+    <div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild className="rounded-full">

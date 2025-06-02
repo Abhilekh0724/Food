@@ -7,7 +7,6 @@ import useDebounce from "@/hooks/useDebounce";
 import { fetchDonors } from "@/store/features/donor-slice";
 import { RootState } from "@/store/root-reducer";
 import { AppDispatch } from "@/store/store";
-import { devLog } from "@/util/logger";
 import { formatFilters } from "@/util/query-builder";
 import {
   ColumnFiltersState,
@@ -46,6 +45,7 @@ export default function DonorPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
   // Effect to handle filter changes
@@ -110,7 +110,9 @@ export default function DonorPage() {
             : {}),
         },
       })
-    );
+    ).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    });
   }, [
     columnFilters,
     dispatch,
@@ -186,14 +188,17 @@ export default function DonorPage() {
           <Input
             placeholder="Search donors by donorId, username, phone and email ..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setIsSearchLoading(true); // Start loading when typing or clearing
+            }}
             className="w-full"
           />
           <Button onClick={() => navigate("/donors/add")}>Add Donor</Button>
         </div>
       </div>
 
-      {fetchLoading ? (
+      {fetchLoading || isSearchLoading ? (
         <Loader />
       ) : (
         <DonorTable

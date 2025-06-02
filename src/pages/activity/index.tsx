@@ -45,6 +45,7 @@ export default function ActivityPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
   // Effect to handle filter changes
@@ -64,17 +65,15 @@ export default function ActivityPage() {
               filters: {
                 $or: [
                   {
-                    followedBy: {
+                    actionBy: {
                       username: {
                         $contains: debouncedValue,
                       },
                     },
                   },
                   {
-                    followedBy: {
-                      phone: {
-                        $contains: debouncedValue,
-                      },
+                    action: {
+                      $contains: debouncedValue,
                     },
                   },
                 ],
@@ -94,7 +93,9 @@ export default function ActivityPage() {
             }),
         },
       })
-    );
+    ).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    });
   }, [
     columnFilters,
     dispatch,
@@ -167,15 +168,18 @@ export default function ActivityPage() {
 
         <div className="flex items-center space-x-2 flex-1">
           <Input
-            placeholder="Search activities by phone or username ..."
+            placeholder="Search activities by action By or action ..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setIsSearchLoading(true); // Start loading when typing or clearing
+            }}
             className="w-full"
           />
         </div>
       </div>
 
-      {fetchLoading ? (
+      {fetchLoading || isSearchLoading ? (
         <Loader />
       ) : (
         <ActivityTable

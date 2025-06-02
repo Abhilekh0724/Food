@@ -43,6 +43,7 @@ export default function BloodTransfersPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
   const [tab, setTab] = useState<"incoming" | "outgoing">("outgoing");
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
   const transfers = useSelector(state => state.bloodTransfer.data)
@@ -99,7 +100,9 @@ export default function BloodTransfersPage() {
             }),
         },
       })
-    );
+    ).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    });
   }, [
     columnFilters,
     dispatch,
@@ -178,7 +181,10 @@ export default function BloodTransfersPage() {
           <Input
             placeholder="Search by Blood Bank ..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setIsSearchLoading(true); // Start loading when typing or clearing
+            }}
             className="w-full"
           />
           <Button onClick={() => navigate("/blood-transfers/add")}>Request Blood Transfer</Button>
@@ -239,7 +245,7 @@ export default function BloodTransfersPage() {
       </div>
 
       {/* Single table instance that changes based on tab selection */}
-      {fetchLoading ? (
+      {fetchLoading || isSearchLoading ? (
         <Loader />
       ) : (
         <BloodTransferTable

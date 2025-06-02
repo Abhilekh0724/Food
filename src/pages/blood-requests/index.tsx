@@ -45,12 +45,13 @@ export default function BloodRequestPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const debouncedValue = useDebounce(search, 3000);
 
-  // Effect to handle filter changes
+  // Effect to handle filter changes and debounced search
   useEffect(() => {
+    setIsSearchLoading(true); // Start loading when effect runs
     const formattedFilters = formatFilters(columnFilters);
-    // You can use formattedFilters here to make API calls
 
     dispatch(
       fetchBloodRequests({
@@ -82,7 +83,6 @@ export default function BloodRequestPage() {
               ],
             }),
           },
-
           ...(sorting?.[0]?.id
             ? {
               sort: [
@@ -92,7 +92,9 @@ export default function BloodRequestPage() {
             : {}),
         },
       })
-    );
+    ).finally(() => {
+      setIsSearchLoading(false); // Stop loading when API call completes
+    });
   }, [
     columnFilters,
     dispatch,
@@ -118,7 +120,6 @@ export default function BloodRequestPage() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
@@ -151,7 +152,7 @@ export default function BloodRequestPage() {
               Blood Requests
             </h2>
             <span className="text-sm">
-              Total records : {data?.meta?.pagination?.total} (blood requests
+              Total records: {data?.meta?.pagination?.total} (blood requests
               from your working districts)
             </span>
           </div>
@@ -161,13 +162,16 @@ export default function BloodRequestPage() {
           <Input
             placeholder="Search requests by request ID or patient's name ..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setIsSearchLoading(true); // Start loading when typing or clearing
+            }}
             className="w-full"
           />
         </div>
       </div>
 
-      {fetchLoading ? (
+      {fetchLoading || isSearchLoading ? (
         <Loader />
       ) : (
         <BloodRequestTable
