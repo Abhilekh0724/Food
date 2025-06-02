@@ -47,7 +47,7 @@ const ActionsCell = ({ admin }: { admin: Admin }) => {
 export const columns: ColumnDef<Admin>[] = [
   {
     id: "user.username",
-    accessorKey: "username",
+    accessorKey: "Full Name",
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -64,7 +64,7 @@ export const columns: ColumnDef<Admin>[] = [
   },
 
   {
-    accessorKey: "email",
+    accessorKey: "Email",
     header: ({ column }) => {
       return (
         <button
@@ -76,11 +76,11 @@ export const columns: ColumnDef<Admin>[] = [
         </button>
       );
     },
-    cell: ({ row }) => <div>{row.getValue("email")}</div>,
+    cell: ({ row }) => <div>{row.original.email}</div>,
   },
 
   {
-    accessorKey: "phone",
+    accessorKey: "Phone",
     header: ({ column }) => {
       return (
         <button
@@ -92,12 +92,12 @@ export const columns: ColumnDef<Admin>[] = [
         </button>
       );
     },
-    cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+    cell: ({ row }) => <div>{row.original.phone}</div>,
   },
 
   {
     id: "user.dob",
-    accessorKey: "age",
+    accessorKey: "DOB",
     header: ({ column }) => {
       return (
         <DataTableColumnHeader
@@ -114,7 +114,7 @@ export const columns: ColumnDef<Admin>[] = [
 
   {
     id: "user.gender",
-    accessorKey: "gender",
+    accessorKey: "Gender",
     header: ({ column }) => {
       return (
         <button
@@ -133,7 +133,7 @@ export const columns: ColumnDef<Admin>[] = [
 
   {
     id: "createdAt",
-    accessorKey: "createdAt",
+    accessorKey: "Joined Date",
     header: ({ column }) => {
       return (
         <DataTableColumnHeader
@@ -144,7 +144,7 @@ export const columns: ColumnDef<Admin>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.getValue("createdAt")}</div>;
+      return <div>{row.original.createdAt}</div>;
     },
   },
 

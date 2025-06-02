@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/table";
 import { BloodUnit } from "@/lib/types";
 import { useSelector } from "@/store/store";
-import { devLog } from "@/util/logger";
 import {
   flexRender,
   PaginationState,

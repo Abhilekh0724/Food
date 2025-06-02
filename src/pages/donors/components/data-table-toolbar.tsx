@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { BulkFileUpload } from "@/components/upload/BulkFileUpload";
 import { useSelector } from "@/store/store";
+import { exportToCsv, printPDF } from "@/util/exports-util";
 import { Table } from "@tanstack/react-table";
-import { Download, Upload, X } from "lucide-react";
+import { Download, Printer, Upload, X } from "lucide-react";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
@@ -344,7 +345,28 @@ export function DataTableToolbar<TData>({
               </>
             )}
           </Button>
-          <DataTableViewOptions table={table} />
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => printPDF(table.getFilteredRowModel().rows, "Donors")}
+              className="h-8"
+            >
+              <Printer className="mr-2 h-4 w-4" />
+              Print
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportToCsv(table.getFilteredRowModel().rows, "Donors")}
+              className="h-8"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              CSV
+            </Button>
+            <DataTableViewOptions table={table} />
+          </div>
         </div>
       </div>
 

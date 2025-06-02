@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useSelector } from "@/store/store";
+import { exportToCsv, printPDF } from "@/util/exports-util";
 import { Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
+import { Download, Printer, X } from "lucide-react";
 import { DataTableViewOptions } from "./data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
@@ -54,7 +55,27 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
-    </div>
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => printPDF(table.getFilteredRowModel().rows, "Activity_Logs")}
+          className="h-8"
+        >
+          <Printer className="mr-2 h-4 w-4" />
+          Print
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => exportToCsv(table.getFilteredRowModel().rows, "Activity_Logs")}
+          className="h-8"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          CSV
+        </Button>
+        <DataTableViewOptions table={table} />
+      </div>    </div>
   );
 }

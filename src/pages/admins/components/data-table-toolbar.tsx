@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { useSelector } from "@/store/store";
+import { exportToCsv, printPDF } from "@/util/exports-util";
 import { Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
+import { X, Download, Printer } from "lucide-react";
 import { DataTableViewOptions } from "./data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
@@ -12,36 +12,13 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-  const courses = useSelector((state) => state.course.data?.data || []);
+  const data = table.getFilteredRowModel().rows.map(row => row.original);
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2">
         <div className="flex gap-x-2">
-          {/* {table.getColumn("course") && (
-            <DataTableFacetedFilter
-              column={table.getColumn("course")}
-              title="Course"
-              options={courses?.map((c) => ({ label: c?.name, value: c?.id }))}
-            />
-          )} */}
-
-          {/* {table.getColumn("is_completed") && (
-            <DataTableFacetedFilter
-              column={table.getColumn("is_completed")}
-              title="Completed"
-              options={[
-                {
-                  label: "Yes",
-                  value: true,
-                },
-                {
-                  label: "No",
-                  value: false,
-                },
-              ]}
-            />
-          )} */}
+          {/* Your existing filters */}
         </div>
         {isFiltered && (
           <Button
@@ -54,7 +31,28 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => printPDF(table.getFilteredRowModel().rows, "Admins")}
+          className="h-8"
+        >
+          <Printer className="mr-2 h-4 w-4" />
+          Print
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => exportToCsv(table.getFilteredRowModel().rows, "Admin")}
+          className="h-8"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          CSV
+        </Button>
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   );
 }

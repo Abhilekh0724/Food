@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { exportToCsv, printPDF } from "@/util/exports-util";
 import { Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
+import { Download, Printer, X } from "lucide-react";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
 
@@ -57,7 +58,28 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => printPDF(table.getFilteredRowModel().rows, "Staffs")}
+          className="h-8"
+        >
+          <Printer className="mr-2 h-4 w-4" />
+          Print
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => exportToCsv(table.getFilteredRowModel().rows, "Staffs")}
+          className="h-8"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          CSV
+        </Button>
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   );
 }
