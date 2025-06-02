@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/context/auth-context";
-import { getDashboardStats } from "@/store/features/dashboard-slice";
+import { getCommunityDashboardStats } from "@/store/features/dashboard-slice";
 import { dispatch, useSelector } from "@/store/store";
 import { Popover } from "@radix-ui/react-popover";
 import { format } from "date-fns";
@@ -25,7 +25,7 @@ import { CalendarIcon, Contact2Icon, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function DashboardPage() {
+export default function CommunityDashboardPage() {
   const { user } = useAuth()
   const [date, setDate] = useState<Date>(new Date());
 
@@ -38,7 +38,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     dispatch(
-      getDashboardStats({
+      getCommunityDashboardStats({
         year: date.getFullYear(),
         user
       })

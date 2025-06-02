@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Bounce, ToastContainer } from "react-toastify";
 import App from "./App";
+import { AuthProvider } from "./context/auth-context";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { store } from "./store/store";
@@ -13,7 +14,10 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <AuthProvider>
+
+        <App />
+      </AuthProvider>
 
       <ToastContainer
         position="bottom-center"

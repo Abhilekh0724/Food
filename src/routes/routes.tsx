@@ -1,7 +1,7 @@
 // routes.tsx
 import ForgotPasswordPage from "@/pages/auth/forgot-password";
 import LoginPage from "@/pages/auth/login";
-import DashboardPage from "@/pages/dashboard";
+import CommunityDashboardPage from "@/pages/dashboard/community-dashboard";
 import { useRoutes } from "react-router-dom";
 import ProtectedRoute from "./protected-routes";
 
@@ -19,7 +19,7 @@ const AppRoutes = () => {
       path: "/dashboard",
       element: (
         <ProtectedRoute>
-          <DashboardPage />
+          <CommunityDashboardPage />
         </ProtectedRoute>
       ),
     },

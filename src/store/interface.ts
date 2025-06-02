@@ -44,6 +44,13 @@ export interface InitialStateI {
     data?: Array<Record<string, any>>;
     meta?: metaI;
   };
+
+  alertStocks?: {
+    data?: Array<Record<string, any>>;
+    meta?: metaI;
+  };
+
   singleData?: Record<string, any> | null;
   stats?: Record<string, any> | null;
+  bloodBankStats?: Record<string, any> | null;
 }

@@ -13,15 +13,25 @@ const initialState: InitialStateI = {
     donorsCount: 0,
     brCount: 0,
     monthlyRequests: []
-  }
-};
-
+  },
+  bloodBankStats: [
+    { type: "A+", count: 0, color: "bg-red-500" },
+    { type: "A-", count: 0, color: "bg-red-400" },
+    { type: "B+", count: 0, color: "bg-red-500" },
+    { type: "B-", count: 0, color: "bg-red-400" },
+    { type: "AB+", count: 0, color: "bg-red-500" },
+    { type: "AB-", count: 0, color: "bg-red-400" },
+    { type: "O+", count: 0, color: "bg-red-500" },
+    { type: "O-", count: 0, color: "bg-red-400" },
+  ]
+}
 // Constants
-const DASHBAORD_STATS = "dashboard/stats";
+const COMMUNITY_DASHBAORD_STATS = "communityDashboard/stats";
+const BLOODBANK_DASHBAORD_STATS = "bloodBankDashboard/stats";
 
 // Thunks
-export const getDashboardStats = createAsyncThunk(
-  DASHBAORD_STATS,
+export const getCommunityDashboardStats = createAsyncThunk(
+  COMMUNITY_DASHBAORD_STATS,
   async ({ user, year }: any, { rejectWithValue }) => {
     try {
       const staffsResponse = await api.get<ApiResponseI>("organizer-members", {
@@ -115,6 +125,331 @@ export const getDashboardStats = createAsyncThunk(
   }
 );
 
+export const getBloodBankDashboardStats = createAsyncThunk(
+  BLOODBANK_DASHBAORD_STATS,
+  async ({ user }: any, { rejectWithValue }) => {
+    try {
+      const APlusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "A+"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+
+      const BPlusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "B+"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+      const ABPlusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "AB+"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+      const AMinusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "A-"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+      const BMinusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "B-"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+      const ABMinusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "AB-"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+      const OPlusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "O+"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+      const OMinusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            bloodGroup: {
+              name: "O-"
+            },
+            $or: [{
+              isUsed: false,
+              isWasted: false,
+              bloodPouchRequests: {
+                $or: [
+                  {
+                    id: { $null: true }
+                  },
+                  {
+                    $and: [{
+                      requestType: 'Transfer'
+                    },
+                    {
+                      status: {
+                        $ne: 'Approve',
+                      }
+                    }]
+                  }
+                ],
+              }
+            }]
+          }
+        },
+      });
+
+      return [
+        { type: "A+", count: APlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
+        { type: "A-", count: AMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
+        { type: "B+", count: BPlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
+        { type: "B-", count: BMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
+        { type: "AB+", count: ABPlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
+        { type: "AB-", count: ABMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
+        { type: "O+", count: OPlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
+        { type: "O-", count: OMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
+      ]
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // Slice
 const authSlice = createSlice({
   name: "auth",
@@ -122,15 +457,30 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getDashboardStats.pending, (state) => {
+      .addCase(getCommunityDashboardStats.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getDashboardStats.fulfilled, (state, action) => {
+      .addCase(getCommunityDashboardStats.fulfilled, (state, action) => {
         state.isLoading = false;
         state.stats = action.payload;
       })
       .addCase(
-        getDashboardStats.rejected,
+        getCommunityDashboardStats.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.isLoading = false;
+          toast.error(action.payload || "Failed");
+        }
+      )
+
+      .addCase(getBloodBankDashboardStats.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getBloodBankDashboardStats.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.bloodBankStats = action.payload;
+      })
+      .addCase(
+        getBloodBankDashboardStats.rejected,
         (state, action: PayloadAction<any>) => {
           state.isLoading = false;
           toast.error(action.payload || "Failed");

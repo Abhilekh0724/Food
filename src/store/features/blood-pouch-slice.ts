@@ -32,11 +32,27 @@ const initialState: InitialStateI = {
     totalBloodPouchesUsed: 0,
     totalBloodPouchesWasted: 0,
     totalExpiringBloodPouches: 0,
-  }
+  },
+  alertStocks: {
+    data: [],
+    meta: {
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1,
+        nextPage: null,
+        prevPage: null,
+        pageCount: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    },
+  },
 };
 
 // Constants
 const FETCH_BLOODREQUESTS = "hbb/fetchBloodPouches";
+const FETCH_ALERT_BLOODREQUESTS = "hbb/fetchAlertBloodPouches";
 const FETCH_STATS_BLOOD_POUCH = "hbb/fetchBloodPouchStats";
 const FETCH_SINGLE_BLOODREQUESTS = "hbb/fetchSingleBloodPouches";
 const CREATE_BLOODREQUESTS = "hbb/createBloodPouches";
@@ -48,6 +64,20 @@ const MARK_COMPLETE = "hbb/completeBloodPouch";
 // Thunks
 export const fetchBloodPouches = createAsyncThunk(
   FETCH_BLOODREQUESTS,
+  async ({ params }: ParamsI, { rejectWithValue }) => {
+    try {
+      const response = await api.get<ApiResponseI>("blood-pouches", {
+        params,
+      });
+      return { data: response.data.data, meta: response.data.meta };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchAlertBloodPouches = createAsyncThunk(
+  FETCH_ALERT_BLOODREQUESTS,
   async ({ params }: ParamsI, { rejectWithValue }) => {
     try {
       const response = await api.get<ApiResponseI>("blood-pouches", {
@@ -302,6 +332,23 @@ const bloodPouchtSlice = createSlice({
       })
       .addCase(
         fetchBloodPouches.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.fetchLoading = false;
+          toast.error(action.payload || "Failed");
+        }
+      );
+
+    builder
+      .addCase(fetchAlertBloodPouches.pending, (state) => {
+        state.fetchLoading = true;
+      })
+      .addCase(fetchAlertBloodPouches.fulfilled, (state, action) => {
+        state.fetchLoading = false;
+        state.alertStocks ??= {}; // Ensure `state.alertStocks` is not undefined
+        state.alertStocks = action.payload ?? [];
+      })
+      .addCase(
+        fetchAlertBloodPouches.rejected,
         (state, action: PayloadAction<any>) => {
           state.fetchLoading = false;
           toast.error(action.payload || "Failed");

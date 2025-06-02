@@ -53,7 +53,7 @@ export default function BloodTransfersPage() {
   //
   useEffect(() => {
     dispatch(fetchBloodTransfersMeta({ id: user?.organizerProfile?.id }))
-  }, [dispatch])
+  }, [dispatch, user?.organizerProfile?.id])
 
 
   useEffect(() => {
