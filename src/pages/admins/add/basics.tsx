@@ -27,6 +27,7 @@ import {
 } from "@/store/features/admin-slice";
 import { dispatch, useSelector } from "@/store/store";
 import { appendFormData } from "@/util/append-formdata";
+import { devLog } from "@/util/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileIcon, Loader2, UploadIcon, XCircleIcon } from "lucide-react";
 import moment from "moment";
@@ -117,31 +118,31 @@ const AddBasicProfile = ({ isEdit = false }: { isEdit?: boolean }) => {
     }
 
     formData.append("dob", moment(data?.dob)?.format("YYYY-MM-DD"));
-
     isEdit && id
       ? dispatch(
-          updateAdmin({
-            data: formData,
-            navigate,
-            id,
-          })
-        )
+        updateAdmin({
+          data: formData,
+          navigate,
+          id: singleAdmin?.attributes?.user?.data?.id,
+          actionBy: user?.id,
+        })
+      )
       : dispatch(
-          createAdmin({
-            data: formData,
-            params: {
-              populate: {
-                avatar: true,
-              },
+        createAdmin({
+          data: formData,
+          params: {
+            populate: {
+              avatar: true,
             },
-            admin: {
-              organizer: user?.organizerProfile?.id,
-              role: "admin",
-            },
-            navigate,
-            actionBy: user?.id,
-          })
-        );
+          },
+          admin: {
+            organizer: user?.organizerProfile?.id,
+            role: "admin",
+          },
+          navigate,
+          actionBy: user?.id,
+        })
+      );
   };
 
   useEffect(() => {
@@ -159,8 +160,8 @@ const AddBasicProfile = ({ isEdit = false }: { isEdit?: boolean }) => {
           singleAdmin?.attributes?.user?.data?.attributes?.occupation || "",
         gender: singleAdmin?.attributes?.user?.data?.attributes?.gender || "",
         bloodGroup:
-          singleAdmin?.attributes?.user?.data?.attributes?.bloodGroup?.data
-            ?.id || "",
+          String(singleAdmin?.attributes?.user?.data?.attributes?.bloodGroup?.data
+            ?.id) || "",
         avatar: (() => {
           const dataTransfer = new DataTransfer();
           if (singleAdmin?.attributes?.user?.data?.attributes?.avatar?.url) {
@@ -458,7 +459,7 @@ const AddBasicProfile = ({ isEdit = false }: { isEdit?: boolean }) => {
                                     className="relative p-2 border rounded-lg bg-white shadow-md w-full"
                                   >
                                     {preview?.startsWith("blob:") ||
-                                    preview?.startsWith("http") ? (
+                                      preview?.startsWith("http") ? (
                                       <div className="relative w-full h-full rounded-md overflow-hidden">
                                         <img
                                           src={preview}

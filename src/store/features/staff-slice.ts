@@ -124,13 +124,24 @@ export const createStaff = createAsyncThunk(
 export const updateStaff = createAsyncThunk(
   UPDATE_STAFFS,
   async (
-    { data, params, id, navigate }: ParamsI & { actionBy?: string },
-    { rejectWithValue }
+    { data, params, id, navigate, actionBy }: ParamsI & { actionBy?: string },
+    { rejectWithValue, dispatch }
   ) => {
     try {
       const response = await api.put<ApiResponseI>(`users/${id}`, data, {
         params,
       });
+
+      dispatch(
+        createActivity({
+          data: {
+            actionBy,
+            action: ActionTypes.UPDATED,
+            description: `Updated a staff with staff ID: ${response.data.id}`,
+            modelName: "User",
+          },
+        })
+      );
 
       return { data: response.data.data, navigate };
     } catch (error: any) {

@@ -122,11 +122,22 @@ export const createAdmin = createAsyncThunk(
 );
 export const updateAdmin = createAsyncThunk(
   UPDATE_ADMINS,
-  async ({ data, params, id, navigate }: ParamsI, { rejectWithValue }) => {
+  async ({ data, params, id, navigate, actionBy }: ParamsI, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.put<ApiResponseI>(`users/${id}`, data, {
         params,
       });
+
+      dispatch(
+        createActivity({
+          data: {
+            actionBy,
+            action: ActionTypes.UPDATED,
+            description: `Updated a admin with admin ID: ${response.data.id}`,
+            modelName: "User",
+          },
+        })
+      );
 
       return { data: response.data.data, navigate };
     } catch (error: any) {
