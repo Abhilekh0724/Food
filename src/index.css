@@ -62,16 +62,16 @@
 }
 
 html {
-    font-family: "Montserrat", "Tektur";
+    font-family: "Poppins", "Tektur";
     font-size: 14px;
 }
 
 /* Media query for large screens */
-@media screen and (min-width: 1600px) {
+/* @media screen and (min-width: 1600px) {
     html {
-        font-size: 18px;
+        font-size: 16px;
     }
-}
+} */
 
 /* Media query for large screens */
 @media screen and (min-width: 2000px) {
