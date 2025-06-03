@@ -101,7 +101,7 @@ export default function BloodDonorProfile({ data }: any) {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar with donor info */}
         <div className="w-full flex-1">
