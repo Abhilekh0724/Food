@@ -1,165 +1,178 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Search } from "lucide-react"
-import { useEffect, useState } from "react"
-import { dispatch, useSelector } from "@/store/store"
-import { fetchEvents } from "@/store/features/event-slice"
-import { useAuth } from "@/context/auth-context"
-import Loader from "@/components/common/loader"
-import useDebounce from "@/hooks/useDebounce"
-import { devLog } from "@/util/logger"
-import EventCard from "@/components/cards/event-card"
-import { useNavigate } from "react-router-dom"
+import EventCard from "@/components/cards/event-card";
+import Loader from "@/components/common/loader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/context/auth-context";
+import useDebounce from "@/hooks/useDebounce";
+import { fetchEvents } from "@/store/features/event-slice";
+import { dispatch, useSelector } from "@/store/store";
+import { devLog } from "@/util/logger";
+import { Plus, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function EventsPage() {
-
-  const { user } = useAuth()
-  const navigate = useNavigate()
-
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 9
-  })
+    pageSize: 9,
+  });
 
   const [search, setSearch] = useState<string>("");
   const [sort, setSort] = useState<string>("desc");
-  const [tab, setTab] = useState<'unverified' | "verified" | 'all' | 'upcoming' | 'completed' | 'active'>("upcoming");
+  const [tab, setTab] = useState<
+    "unverified" | "verified" | "all" | "upcoming" | "completed" | "active"
+  >("upcoming");
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
-
-  const events = useSelector(state => state.event.data)
-  const fetchLoading = useSelector(state => state.event.fetchLoading)
+  const events = useSelector((state) => state.event.data);
+  const fetchLoading = useSelector((state) => state.event.fetchLoading);
 
   //TODO: fetch the events of the particular organizer
 
   useEffect(() => {
-    function switchTabFilter(value: 'unverified' | "verified" | 'all' | 'upcoming' | 'completed' | 'active') {
+    function switchTabFilter(
+      value:
+        | "unverified"
+        | "verified"
+        | "all"
+        | "upcoming"
+        | "completed"
+        | "active"
+    ) {
       switch (value) {
-        case 'upcoming':
+        case "upcoming":
           return {
             eventDateTime: {
-              $gt: new Date()
-            }
-          }
+              $gt: new Date(),
+            },
+          };
 
-        case 'active':
+        case "active":
           return {
             eventDateTime: {
-              $eq: new Date()
-            }
-          }
+              $eq: new Date(),
+            },
+          };
 
-        case 'verified':
+        case "verified":
           return {
             status: {
-              $eq: 'Verified'
-            }
-          }
+              $eq: "Verified",
+            },
+          };
 
-        case 'unverified':
+        case "unverified":
           return {
             status: {
-              $eq: 'Pending'
-            }
-          }
+              $eq: "Pending",
+            },
+          };
 
-        case 'completed':
+        case "completed":
           return {
-            $and: [{
-              status: {
-                $eq: 'Verified'
-              }
-            }, {
-              eventDateTime: {
-                $lt: new Date()
-              }
-            }]
-          }
+            $and: [
+              {
+                status: {
+                  $eq: "Verified",
+                },
+              },
+              {
+                eventDateTime: {
+                  $lt: new Date(),
+                },
+              },
+            ],
+          };
         default:
-          return {}
+          return {};
       }
     }
 
+    dispatch(
+      fetchEvents({
+        params: {
+          pagination,
+          filters: {
+            ...switchTabFilter(tab),
+            organizer: {
+              id: user?.organizerProfile?.id,
+            },
+            ...(debouncedValue !== "" && {
+              $or: [
+                {
+                  name: {
+                    $containsi: debouncedValue,
+                  },
+                },
+                {
+                  description: {
+                    $containsi: debouncedValue,
+                  },
+                },
 
-    dispatch(fetchEvents({
-      params: {
-        pagination,
-        filters: {
-          ...switchTabFilter(tab),
-          organizer: {
-            id: user?.organizerProfile?.id
+                {
+                  address: {
+                    country: {
+                      $containsi: debouncedValue,
+                    },
+                  },
+                },
+
+                {
+                  address: {
+                    district: {
+                      $containsi: debouncedValue,
+                    },
+                  },
+                },
+
+                {
+                  address: {
+                    municipality: {
+                      $containsi: debouncedValue,
+                    },
+                  },
+                },
+
+                {
+                  address: {
+                    streetAddress: {
+                      $containsi: debouncedValue,
+                    },
+                  },
+                },
+
+                {
+                  address: {
+                    city: {
+                      $containsi: debouncedValue,
+                    },
+                  },
+                },
+              ],
+            }),
           },
-          ...(debouncedValue !== "" && {
-            $or: [
-              {
-                name: {
-                  $containsi: debouncedValue,
-                },
-              },
-              {
-                description: {
-                  $containsi: debouncedValue,
-                },
-              },
-
-              {
-                address: {
-                  country: {
-                    $containsi: debouncedValue,
-                  },
-                }
-              },
-
-              {
-                address: {
-                  district: {
-                    $containsi: debouncedValue,
-                  },
-                }
-              },
-
-              {
-                address: {
-                  municipality: {
-                    $containsi: debouncedValue,
-                  },
-                }
-              },
-
-
-              {
-                address: {
-                  streetAddress: {
-                    $containsi: debouncedValue,
-                  },
-                }
-              },
-
-              {
-                address: {
-                  city: {
-                    $containsi: debouncedValue,
-                  },
-                }
-              },
-            ],
-          }),
+          sort: [`createdAt:${sort}`],
+          populate: "*",
         },
-        sort: [`createdAt:${sort}`],
-        populate: '*'
-      }
-
-    })).finally(() => {
+      })
+    ).finally(() => {
       setIsSearchLoading(false); // Stop loading when API call completes
-    })
-  }, [pagination, user?.organizerProfile?.id, debouncedValue, sort, tab])
-
-
+    });
+  }, [pagination, user?.organizerProfile?.id, debouncedValue, sort, tab]);
 
   return (
     <div className="space-y-6">
@@ -167,16 +180,30 @@ export default function EventsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Events List</h1>
         </div>
-        <Button onClick={() => navigate(`/community/events/add`)} className="bg-red-600 hover:bg-red-700">
+        <Button
+          onClick={() => navigate(`/community/events/add`)}
+          className="bg-red-600 hover:bg-red-700"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Create Event
         </Button>
       </div>
 
-      <Tabs onValueChange={(e) => {
-        setTab(e as "unverified" | "verified" | "all" | "upcoming" | "completed" | "active")
-        setPagination(prev => ({ ...prev, page: 1 }))
-      }} defaultValue="upcoming">
+      <Tabs
+        onValueChange={(e) => {
+          setTab(
+            e as
+              | "unverified"
+              | "verified"
+              | "all"
+              | "upcoming"
+              | "completed"
+              | "active"
+          );
+          setPagination((prev) => ({ ...prev, page: 1 }));
+        }}
+        defaultValue="upcoming"
+      >
         <TabsList onChange={(e) => devLog(e, "eeeeeeee")}>
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
           <TabsTrigger value="unverified">Unverified</TabsTrigger>
@@ -203,7 +230,9 @@ export default function EventsPage() {
                       setSearch(event.target.value);
                       setIsSearchLoading(true); // Start loading when typing or clearing
                     }}
-                    placeholder="Search events by title or description or location..." className="pl-8" />
+                    placeholder="Search events by title or description or location..."
+                    className="pl-8"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <Select defaultValue="desc" onValueChange={(e) => setSort(e)}>
@@ -219,43 +248,65 @@ export default function EventsPage() {
               </div>
 
               <TabsContent value={tab} className="space-y-4">
-                {fetchLoading || isSearchLoading ? <Loader /> : <>
-                  {events?.data?.length ? <>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                      {
-                        events?.data?.map((event, index: number) => (
-                          <EventCard tab={tab} event={event} key={index} />
-                        ))}
-                    </div>
+                {fetchLoading || isSearchLoading ? (
+                  <Loader />
+                ) : (
+                  <>
+                    {events?.data?.length ? (
+                      <>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                          {events?.data?.map((event, index: number) => (
+                            <EventCard tab={tab} event={event} key={index} />
+                          ))}
+                        </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-muted-foreground">
-                        {/* Showing <strong>{events?.meta?.pagination?.page}-6</strong> of  */}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          onClick={() => {
-                            setPagination(prev => ({ ...prev, page: prev.page - 1 }))
-                          }}
-                          variant="outline" size="sm" disabled={pagination.page === 1}>
-                          Previous
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setPagination(prev => ({ ...prev, page: prev.page + 1 }))
-                          }}
-                          variant="outline" size="sm" disabled={pagination.page === events?.meta?.pagination?.pageCount}>
-                          Next
-                        </Button>
-                      </div>
-                    </div>
-                  </> : <div className="flex justify-center">No Events</div>}
-                </>}
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm text-muted-foreground">
+                            {/* Showing <strong>{events?.meta?.pagination?.page}-6</strong> of  */}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              onClick={() => {
+                                setPagination((prev) => ({
+                                  ...prev,
+                                  page: prev.page - 1,
+                                }));
+                              }}
+                              variant="outline"
+                              size="sm"
+                              disabled={pagination.page === 1}
+                            >
+                              Previous
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setPagination((prev) => ({
+                                  ...prev,
+                                  page: prev.page + 1,
+                                }));
+                              }}
+                              variant="outline"
+                              size="sm"
+                              disabled={
+                                pagination.page ===
+                                events?.meta?.pagination?.pageCount
+                              }
+                            >
+                              Next
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex justify-center">No Events</div>
+                    )}
+                  </>
+                )}
               </TabsContent>
             </div>
           </CardContent>
         </Card>
       </Tabs>
-    </div >
-  )
+    </div>
+  );
 }

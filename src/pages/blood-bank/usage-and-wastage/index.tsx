@@ -31,13 +31,13 @@ import UsageAndWastageTable from "./components/usage-and-wastage-table";
 type StatusFilter = "all" | "unused" | "used" | "wasted" | "transferred";
 
 export default function UsagePage() {
-  const { user } = useAuth()
+  const { user } = useAuth();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all"); // Add status filter state
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -45,8 +45,8 @@ export default function UsagePage() {
     pageSize: 10,
   });
 
-  const stocks = useSelector(state => state.bloodPouch.data)
-  const fetchLoading = useSelector(state => state.bloodPouch.fetchLoading)
+  const stocks = useSelector((state) => state.bloodPouch.data);
+  const fetchLoading = useSelector((state) => state.bloodPouch.fetchLoading);
 
   // Effect to handle filter changes
   useEffect(() => {
@@ -59,23 +59,23 @@ export default function UsagePage() {
         statusFilterCondition = {
           isUsed: false,
           expiry: {
-            $gt: new Date()
-          }
+            $gt: new Date(),
+          },
         };
       } else if (statusFilter === "used") {
         statusFilterCondition = { isUsed: true };
       } else if (statusFilter === "wasted") {
         statusFilterCondition = {
           expiry: {
-            $lt: new Date()
-          }
+            $lt: new Date(),
+          },
         };
       } else if (statusFilter === "transferred") {
         statusFilterCondition = {
           bloodPouchRequests: {
-            requestType: 'Transfer',
-            status: 'Approve',
-          }
+            requestType: "Transfer",
+            status: "Approve",
+          },
         };
       }
     }
@@ -87,7 +87,7 @@ export default function UsagePage() {
             page: pagination.pageIndex + 1,
             pageSize: pagination.pageSize,
           },
-          populate: 'donor.donorProfile, bloodGroup',
+          populate: "donor.donorProfile, bloodGroup",
           filters: {
             ...formattedFilters.filter,
             ...statusFilterCondition,
@@ -101,7 +101,7 @@ export default function UsagePage() {
                     donorProfile: {
                       donorId: {
                         $containsi: debouncedValue,
-                      }
+                      },
                     },
                   },
                 },
@@ -109,16 +109,16 @@ export default function UsagePage() {
                   pouchId: {
                     $containsi: debouncedValue,
                   },
-                }
+                },
               ],
             }),
           },
           ...(sorting?.[0]?.id
             ? {
-              sort: [
-                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
-              ],
-            }
+                sort: [
+                  `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+                ],
+              }
             : {}),
         },
       })
@@ -139,17 +139,25 @@ export default function UsagePage() {
       id: d.id,
       expiryDate: moment(d?.attributes?.expiry).format("DD MMM, YYYY"),
       donationDate: moment(d?.attributes?.donationDate).format("DD MMM, YYYY"),
-      usedAt: d?.attributes?.usedAt ? moment(d?.attributes?.usedAt).format("DD MMM, YYYY") : "-",
+      usedAt: d?.attributes?.usedAt
+        ? moment(d?.attributes?.usedAt).format("DD MMM, YYYY")
+        : "-",
       pouchId: d?.attributes?.pouchId,
       isUsed: d?.attributes?.isUsed,
       isWasted: d?.attributes?.isWasted,
       isTransferred: d?.attributes?.isTransferred,
       bloodType: d?.attributes?.bloodType,
       bloodGroup: d?.attributes?.bloodGroup?.data?.attributes?.name,
-      status: d?.attributes?.isUsed ? 'Used' :
-        d?.attributes?.isWasted ? 'Wasted' :
-          d?.attributes?.isTransferred ? 'Transferred' : 'Available',
-      donorId: d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes?.donorId,
+      status: d?.attributes?.isUsed
+        ? "Used"
+        : d?.attributes?.isWasted
+        ? "Wasted"
+        : d?.attributes?.isTransferred
+        ? "Transferred"
+        : "Available",
+      donorId:
+        d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes
+          ?.donorId,
       donor: d?.attributes?.donor?.data?.id,
       usageDate: moment(d?.attributes?.usedAt).format("DD MMM, YYYY"),
     })) ?? []) as BloodUsage[];

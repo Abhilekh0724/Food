@@ -13,11 +13,11 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogTrigger
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -41,18 +41,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/context/auth-context";
 import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
-import { createBloodPouch, fetchSingleBloodPouches, updateBloodPouch } from "@/store/features/blood-pouch-slice";
+import {
+  createBloodPouch,
+  fetchSingleBloodPouches,
+  updateBloodPouch,
+} from "@/store/features/blood-pouch-slice";
 import { fetchDonors } from "@/store/features/donor-slice";
 import { dispatch, useSelector } from "@/store/store";
 import { devLog } from "@/util/logger";
 import { generateRandomString } from "@/util/random";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  Check,
+  ChevronsUpDown,
+  Loader2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -77,40 +85,39 @@ const ReceiverInfoForm = ({
   receiverInfo,
   onSave,
   onCancel,
-  isSubmitting
+  isSubmitting,
 }: {
   receiverInfo?: ReceiverInfo;
   onSave: (data: ReceiverInfo) => void;
   onCancel: () => void;
   isSubmitting: boolean;
 }) => {
+  devLog(receiverInfo, "receiverInfo");
 
-  devLog(receiverInfo, "receiverInfo")
+  const [formData, setFormData] = useState<ReceiverInfo>(
+    receiverInfo || {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      district: "",
+      occupation: "",
+      country: "",
+      municipality: "",
+      city: "",
+      streetAddress: "",
+      zipCode: "",
+      wardNo: "",
+    }
+  );
 
-
-  const [formData, setFormData] = useState<ReceiverInfo>(receiverInfo || {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    district: '',
-    occupation: '',
-    country: '',
-    municipality: '',
-    city: '',
-    streetAddress: '',
-    zipCode: '',
-    wardNo: ''
-  });
-
-  devLog(formData, "formData")
-
+  devLog(formData, "formData");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -244,10 +251,17 @@ const ReceiverInfoForm = ({
       </div>
 
       <DialogFooter>
-        <Button variant="outline" onClick={onCancel}>Cancel</Button>
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button
           onClick={() => onSave(formData)}
-          disabled={!formData.firstName || !formData.lastName || !formData.phone || isSubmitting}
+          disabled={
+            !formData.firstName ||
+            !formData.lastName ||
+            !formData.phone ||
+            isSubmitting
+          }
         >
           {isSubmitting ? <Loader2 className="animate-spin" /> : "Save"}
         </Button>
@@ -271,8 +285,7 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [showReceiverForm, setShowReceiverForm] = useState(false);
-  const [isUsed, setIsUsed] = useState(false);
-  const debouncedValue = useDebounce(searchQuery, 3000);
+  const debouncedValue = useDebounce(searchQuery, 1000);
 
   useEffect(() => {
     if (id) {
@@ -287,27 +300,32 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
     }
   }, [id]);
 
-  const form = useForm<FormValues & { isUsed: boolean; usedBy?: ReceiverInfo }>({
-    resolver: zodResolver(bloodStockSchema),
-    defaultValues: {
-      pouchId: generateRandomString({ length: 8 }).toString(),
-      bloodType: "",
-      bloodGroup: "",
-      donor: "",
-      donationDate: new Date(),
-      expiry: new Date(),
-      isUsed: false,
-      usedBy: undefined
-    },
-  });
+  const form = useForm<FormValues & { isUsed: boolean; usedBy?: ReceiverInfo }>(
+    {
+      resolver: zodResolver(bloodStockSchema),
+      defaultValues: {
+        pouchId: generateRandomString({ length: 8 }).toString(),
+        bloodType: "",
+        bloodGroup: "",
+        donor: "",
+        donationDate: new Date(),
+        expiry: new Date(),
+        isUsed: false,
+        usedBy: undefined,
+      },
+    }
+  );
 
   useEffect(() => {
     if (singleStock && id) {
       const usedBy = singleStock?.attributes?.usedBy;
       const initialValues = {
-        pouchId: singleStock?.attributes?.pouchId || generateRandomString({ length: 8 }).toString(),
+        pouchId:
+          singleStock?.attributes?.pouchId ||
+          generateRandomString({ length: 8 }).toString(),
         bloodType: singleStock?.attributes?.bloodType || "",
-        bloodGroup: singleStock?.attributes?.bloodGroup?.data?.id?.toString() || "",
+        bloodGroup:
+          singleStock?.attributes?.bloodGroup?.data?.id?.toString() || "",
         donor: singleStock?.attributes?.donor?.data?.id?.toString() || "",
         donationDate: singleStock?.attributes?.donationDate
           ? new Date(singleStock?.attributes?.donationDate)
@@ -316,52 +334,60 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
           ? new Date(singleStock?.attributes?.expiry)
           : new Date(),
         isUsed: !!singleStock?.attributes?.isUsed,
-        usedBy: usedBy ? {
-          firstName: usedBy.firstName || '',
-          lastName: usedBy.lastName || '',
-          email: usedBy.email || '',
-          phone: usedBy.phone || '',
-          district: usedBy.district || '',
-          occupation: usedBy.occupation || '',
-          country: usedBy.country || '',
-          municipality: usedBy.municipality || '',
-          city: usedBy.city || '',
-          streetAddress: usedBy.streetAddress || '',
-          zipCode: usedBy.zipCode || '',
-          wardNo: usedBy.wardNo || ''
-        } : undefined
+        usedBy: usedBy
+          ? {
+              firstName: usedBy.firstName || "",
+              lastName: usedBy.lastName || "",
+              email: usedBy.email || "",
+              phone: usedBy.phone || "",
+              district: usedBy.district || "",
+              occupation: usedBy.occupation || "",
+              country: usedBy.country || "",
+              municipality: usedBy.municipality || "",
+              city: usedBy.city || "",
+              streetAddress: usedBy.streetAddress || "",
+              zipCode: usedBy.zipCode || "",
+              wardNo: usedBy.wardNo || "",
+            }
+          : undefined,
       };
 
       form.reset(initialValues);
-      setIsUsed(initialValues.isUsed);
     }
   }, [singleStock, form, id]);
 
-  const onSubmit = (data: FormValues & { isUsed: boolean; usedBy?: ReceiverInfo }) => {
+  const onSubmit = (
+    data: FormValues & { isUsed: boolean; usedBy?: ReceiverInfo }
+  ) => {
     const submitData = {
       ...data,
-      isUsed: form.getValues('isUsed'),
-      usedAt: form.getValues('isUsed') ? new Date().toISOString() : null,
-      usedBy: form.getValues('isUsed') ? form.getValues('usedBy') : null
+      isUsed: form.getValues("isUsed"),
+      usedAt: form.getValues("isUsed") ? new Date().toISOString() : null,
+      usedBy: form.getValues("isUsed") ? form.getValues("usedBy") : null,
     };
 
-    devLog(submitData, form.getValues('usedBy'), form.getValues('isUsed'), "submitData")
+    devLog(
+      submitData,
+      form.getValues("usedBy"),
+      form.getValues("isUsed"),
+      "submitData"
+    );
 
     dispatch(
       isEdit && id
         ? updateBloodPouch({
-          data: submitData,
-          actionBy: user?.id,
-          id
-        })
+            data: submitData,
+            actionBy: user?.id,
+            id,
+          })
         : createBloodPouch({
-          data: {
-            ...submitData,
-            organizer: user?.organizerProfile?.id
-          },
-          navigate,
-          actionBy: user?.id
-        })
+            data: {
+              ...submitData,
+              organizer: user?.organizerProfile?.id,
+            },
+            navigate,
+            actionBy: user?.id,
+          })
     );
   };
 
@@ -411,7 +437,10 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
 
   const breadcrumbItems = [
     { label: "Blood Stocks", href: "/blood-stocks" },
-    { label: isEdit ? `Update Blood Stock` : "Add Blood Stock", href: `/blood-stocks/${id || 'add'}` }
+    {
+      label: isEdit ? `Update Blood Stock` : "Add Blood Stock",
+      href: `/blood-stocks/${id || "add"}`,
+    },
   ];
 
   return (
@@ -540,29 +569,36 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
                                       aria-expanded={open}
                                       className="w-full justify-between"
                                     >
-                                      {(field.value && donors?.data
+                                      {field.value &&
+                                      donors?.data
                                         ?.map((d) => ({
                                           label:
                                             d?.attributes?.donor?.data
                                               ?.attributes?.username,
-                                          value: d?.attributes?.donor?.data?.id?.toString(),
+                                          value:
+                                            d?.attributes?.donor?.data?.id?.toString(),
                                         }))
                                         .find(
                                           (option) =>
                                             option.value === field.value
-                                        )?.label)
+                                        )?.label
                                         ? donors?.data
-                                          ?.map((d) => ({
-                                            label:
-                                              d?.attributes?.donor?.data
-                                                ?.attributes?.username,
-                                            value: d?.attributes?.donor?.data?.id?.toString(),
-                                          }))
-                                          .find(
-                                            (option) =>
-                                              option.value === field.value
-                                          )?.label || "Select donor..."
-                                        : singleStock?.attributes?.donor?.data?.attributes?.username ? singleStock?.attributes?.donor?.data?.attributes?.username : "Select donor..."}
+                                            ?.map((d) => ({
+                                              label:
+                                                d?.attributes?.donor?.data
+                                                  ?.attributes?.username,
+                                              value:
+                                                d?.attributes?.donor?.data?.id?.toString(),
+                                            }))
+                                            .find(
+                                              (option) =>
+                                                option.value === field.value
+                                            )?.label || "Select donor..."
+                                        : singleStock?.attributes?.donor?.data
+                                            ?.attributes?.username
+                                        ? singleStock?.attributes?.donor?.data
+                                            ?.attributes?.username
+                                        : "Select donor..."}
                                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                     </Button>
                                   </FormControl>
@@ -590,9 +626,7 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
                                     <CommandGroup>
                                       {donors?.data
                                         ?.map((d) => ({
-                                          label:
-                                            `${d?.attributes?.donor?.data
-                                              ?.attributes?.username} (${d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes?.donorId})`,
+                                          label: `${d?.attributes?.donor?.data?.attributes?.username} (${d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes?.donorId})`,
                                           value: d?.attributes?.donor?.data?.id,
                                         }))
                                         ?.map((option, index) => (
@@ -726,8 +760,6 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
                         </FormItem>
                       )}
                     />
-
-
                   </div>
                 </CardContent>
               </Card>
@@ -743,19 +775,27 @@ const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
                 Cancel
               </Button>
               <Button disabled={loading} type="submit">
-                {loading ? <>
-                  <Loader2 className="animate-spin" />
-                  Please wait
-                </> : isEdit ? "Update Stock" : "Save Stock"}
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Please wait
+                  </>
+                ) : isEdit ? (
+                  "Update Stock"
+                ) : (
+                  "Save Stock"
+                )}
               </Button>
             </div>
 
             <Dialog open={showReceiverForm} onOpenChange={setShowReceiverForm}>
               <DialogTrigger asChild />
               <ReceiverInfoForm
-                receiverInfo={form.watch('usedBy') || singleStock?.attributes?.usedBy}
+                receiverInfo={
+                  form.watch("usedBy") || singleStock?.attributes?.usedBy
+                }
                 onSave={(data) => {
-                  form.setValue('usedBy', data);
+                  form.setValue("usedBy", data);
                   setShowReceiverForm(false);
                 }}
                 onCancel={() => setShowReceiverForm(false)}

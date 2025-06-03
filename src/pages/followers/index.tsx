@@ -48,7 +48,7 @@ export default function FollowerPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
   // Effect to handle filter changes
   useEffect(() => {

@@ -46,7 +46,7 @@ export default function ActivityPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
   // Effect to handle filter changes
   useEffect(() => {
@@ -62,35 +62,33 @@ export default function ActivityPage() {
           populate: "actionBy",
           ...(debouncedValue !== ""
             ? {
-              filters: {
-                $or: [
-                  {
-                    actionBy: {
-                      username: {
+                filters: {
+                  $or: [
+                    {
+                      actionBy: {
+                        username: {
+                          $contains: debouncedValue,
+                        },
+                      },
+                    },
+                    {
+                      action: {
                         $contains: debouncedValue,
                       },
                     },
-                  },
-                  {
-                    action: {
-                      $contains: debouncedValue,
-                    },
-                  },
-                ],
-              },
-            }
+                  ],
+                },
+              }
             : {}),
           ...(sorting?.[0]?.id
             ? {
-              sort: [
-                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
-              ],
-            }
+                sort: [
+                  `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+                ],
+              }
             : {
-              sort: [
-                'createdAt:desc',
-              ],
-            }),
+                sort: ["createdAt:desc"],
+              }),
         },
       })
     ).finally(() => {
@@ -116,7 +114,9 @@ export default function ActivityPage() {
       action: d?.attributes?.action,
       description: d?.attributes?.description,
       modelName: d?.attributes?.modelName,
-      createdAt: moment(d?.attributes?.createdAt).format("DD MMM YYYY | HH:mm A"),
+      createdAt: moment(d?.attributes?.createdAt).format(
+        "DD MMM YYYY | HH:mm A"
+      ),
     })) ?? []) as Activity[];
   }, [data]);
 

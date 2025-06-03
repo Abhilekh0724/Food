@@ -43,11 +43,10 @@ export default function BloodStockPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
-
-  const stocks = useSelector(state => state.bloodPouch.data)
-  const fetchLoading = useSelector(state => state.bloodPouch.fetchLoading)
+  const stocks = useSelector((state) => state.bloodPouch.data);
+  const fetchLoading = useSelector((state) => state.bloodPouch.fetchLoading);
 
   // Effect to handle filter changes
   useEffect(() => {
@@ -55,106 +54,105 @@ export default function BloodStockPage() {
 
     const result = { ...formattedFilters.filter };
 
+    const statusFilter: any = columnFilters.find((cF) => cF.id === "status");
 
-    const statusFilter: any = columnFilters.find(cF => cF.id === 'status')
-
-    const or: any = []
-    if (statusFilter?.id === 'status') {
+    const or: any = [];
+    if (statusFilter?.id === "status") {
       statusFilter?.value?.forEach((v: any) => {
-        if (v === 'used') {
-          or.push({ isUsed: true })
+        if (v === "used") {
+          or.push({ isUsed: true });
         }
 
-        if (v === 'wasted') {
-          or.push({ isWasted: true })
-
+        if (v === "wasted") {
+          or.push({ isWasted: true });
         }
 
-        if (v === 'transferred') {
+        if (v === "transferred") {
           or.push({
             bloodPouchRequests: {
-              requestType: 'Transfer',
-              status: 'Transfer'
-            }
-          })
-
+              requestType: "Transfer",
+              status: "Transfer",
+            },
+          });
         }
 
-        if (v === 'approved') {
+        if (v === "approved") {
           or.push({
             bloodPouchRequests: {
-              requestType: 'Transfer',
-              status: 'Approve'
-            }
-          })
-
+              requestType: "Transfer",
+              status: "Approve",
+            },
+          });
         }
 
-        if (v === 'available') {
+        if (v === "available") {
           or.push({
             isUsed: false,
             isWasted: false,
             bloodPouchRequests: {
               $or: [
                 {
-                  id: { $null: true }
+                  id: { $null: true },
                 },
                 {
-                  $and: [{
-                    requestType: 'Transfer'
-                  },
-                  {
-                    status: {
-                      $ne: 'Approve',
-                    }
-                  }]
-                }
+                  $and: [
+                    {
+                      requestType: "Transfer",
+                    },
+                    {
+                      status: {
+                        $ne: "Approve",
+                      },
+                    },
+                  ],
+                },
               ],
-            }
-          })
+            },
+          });
         }
 
-        if (v === 'expiring_soon') {
+        if (v === "expiring_soon") {
           or.push({
             isUsed: false,
             isWasted: false,
             expiry: {
               $gt: new Date(), // Not expired yet
-              $lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // Expires within 7 days
+              $lte: new Date(
+                Date.now() + 7 * 24 * 60 * 60 * 1000
+              ).toISOString(), // Expires within 7 days
             },
-          })
+          });
         }
-      })
+      });
     }
-
 
     delete result.status;
 
-
-
-    if ('isTransferred' in formattedFilters.filter) {
+    if ("isTransferred" in formattedFilters.filter) {
       if (formattedFilters.filter.isTransferred === true) {
         result.bloodPouchRequests = {
-          requestType: 'Transfer',
-          status: 'Approve',
+          requestType: "Transfer",
+          status: "Approve",
         };
-      }
-      else { //transfer no
+      } else {
+        //transfer no
         result.bloodPouchRequests = {
           $or: [
             {
-              id: { $null: true }
+              id: { $null: true },
             },
             {
-              $and: [{
-                requestType: 'Transfer'
-              },
-              {
-                status: {
-                  $ne: 'Approve',
-                }
-              }]
-            }
+              $and: [
+                {
+                  requestType: "Transfer",
+                },
+                {
+                  status: {
+                    $ne: "Approve",
+                  },
+                },
+              ],
+            },
           ],
         };
       }
@@ -170,7 +168,7 @@ export default function BloodStockPage() {
             page: pagination.pageIndex + 1,
             pageSize: pagination.pageSize,
           },
-          populate: 'donor.donorProfile, bloodGroup, bloodPouchRequests',
+          populate: "donor.donorProfile, bloodGroup, bloodPouchRequests",
           filters: {
             ...result,
             ...(or.length ? { $or: or } : {}),
@@ -184,7 +182,7 @@ export default function BloodStockPage() {
                     donorProfile: {
                       donorId: {
                         $containsi: debouncedValue,
-                      }
+                      },
                     },
                   },
                 },
@@ -192,21 +190,19 @@ export default function BloodStockPage() {
                   pouchId: {
                     $containsi: debouncedValue,
                   },
-                }
+                },
               ],
             }),
           },
           ...(sorting?.[0]?.id
             ? {
-              sort: [
-                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
-              ],
-            }
+                sort: [
+                  `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+                ],
+              }
             : {
-              sort: [
-                'createdAt:desc',
-              ],
-            }),
+                sort: ["createdAt:desc"],
+              }),
         },
       })
     ).finally(() => {
@@ -222,7 +218,6 @@ export default function BloodStockPage() {
     debouncedValue,
   ]);
 
-
   // Memoize the data for the table to update properly when filters change
   const filteredData = useMemo(() => {
     return (stocks?.data?.map((d) => ({
@@ -230,22 +225,30 @@ export default function BloodStockPage() {
       expiryDate: moment(d?.attributes?.expiry).format("DD MMM, YYYY"),
       donationDate: moment(d?.attributes?.donationDate).format("DD MMM, YYYY"),
       pouchId: d?.attributes?.pouchId,
-      isTransferred: d?.attributes?.bloodPouchRequests?.data?.some((bP: any) => bP?.attributes?.status === 'Transfer' && bP?.attributes?.requestType === 'Transfer'),
-      isApproved: d?.attributes?.bloodPouchRequests?.data?.some((bP: any) => bP?.attributes?.status === 'Approve' && bP?.attributes?.requestType === 'Transfer'),
+      isTransferred: d?.attributes?.bloodPouchRequests?.data?.some(
+        (bP: any) =>
+          bP?.attributes?.status === "Transfer" &&
+          bP?.attributes?.requestType === "Transfer"
+      ),
+      isApproved: d?.attributes?.bloodPouchRequests?.data?.some(
+        (bP: any) =>
+          bP?.attributes?.status === "Approve" &&
+          bP?.attributes?.requestType === "Transfer"
+      ),
       isUsed: d?.attributes?.isUsed,
       isWasted: d?.attributes?.isWasted,
       bloodType: d?.attributes?.bloodType,
       bloodGroup: d?.attributes?.bloodGroup?.data?.attributes?.name,
-      status: 'Available',
-      donorId: d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes?.donorId,
+      status: "Available",
+      donorId:
+        d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes
+          ?.donorId,
       donor: d?.attributes?.donor?.data?.id,
       usageDate: moment(d?.attributes?.usedAt).format("DD MMM, YYYY"),
     })) ?? []) as BloodUnit[];
   }, [stocks]);
 
-
-  devLog(filteredData, "filtered")
-
+  devLog(filteredData, "filtered");
 
   const table = useReactTable<BloodUnit>({
     data: filteredData,
@@ -301,10 +304,10 @@ export default function BloodStockPage() {
             }}
             className="w-full"
           />
-          <Button onClick={() => navigate("/blood-stocks/add")}>Add Stock</Button>
-
+          <Button onClick={() => navigate("/blood-stocks/add")}>
+            Add Stock
+          </Button>
         </div>
-
       </div>
 
       <div className="mt-6">

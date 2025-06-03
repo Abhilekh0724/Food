@@ -46,7 +46,7 @@ export default function DonorPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
   // Effect to handle filter changes
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function DonorPage() {
                   donor: {
                     donorProfile: {
                       donorId: {
-                        $containsi: debouncedValue
+                        $containsi: debouncedValue,
                       },
                     },
                   },
@@ -103,10 +103,10 @@ export default function DonorPage() {
           populate: "donor.donorProfile, donor.bloodGroup",
           ...(sorting?.[0]?.id
             ? {
-              sort: [
-                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
-              ],
-            }
+                sort: [
+                  `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+                ],
+              }
             : {}),
         },
       })
@@ -128,17 +128,20 @@ export default function DonorPage() {
     return (data?.data?.map((d) => ({
       id: d?.attributes?.donor?.data?.id,
       donor_id: d?.id,
-      donorId: d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes?.donorId,
+      donorId:
+        d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes
+          ?.donorId,
       username: d?.attributes?.donor?.data?.attributes?.username,
       email: d?.attributes?.donor?.data?.attributes?.email,
       phone: d?.attributes?.donor?.data?.attributes?.phone,
       dob: d?.attributes?.donor?.data?.attributes?.dob,
       gender: d?.attributes?.donor?.data?.attributes?.gender,
-      bloodGroup: d?.attributes?.donor?.data?.attributes?.bloodGroup?.data?.attributes?.name,
+      bloodGroup:
+        d?.attributes?.donor?.data?.attributes?.bloodGroup?.data?.attributes
+          ?.name,
       createdAt: moment(d?.attributes?.createdAt).format("MMM DD, YYYY"),
     })) ?? []) as Donor[];
   }, [data]);
-
 
   const table = useReactTable<Donor>({
     data: filteredData,

@@ -46,7 +46,7 @@ export default function EnrollPage() {
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
   // Effect to handle filter changes
   useEffect(() => {
@@ -95,15 +95,13 @@ export default function EnrollPage() {
           },
           ...(sorting?.[0]?.id
             ? {
-              sort: [
-                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
-              ],
-            }
+                sort: [
+                  `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+                ],
+              }
             : {
-              sort: [
-                'createdAt:desc',
-              ],
-            }),
+                sort: ["createdAt:desc"],
+              }),
         },
       })
     ).finally(() => {

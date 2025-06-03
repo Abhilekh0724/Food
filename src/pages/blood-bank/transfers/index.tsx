@@ -7,7 +7,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Removed T
 import { useAuth } from "@/context/auth-context";
 import useDebounce from "@/hooks/useDebounce";
 import { BloodTransferI } from "@/lib/types";
-import { fetchBloodTransfers, fetchBloodTransfersMeta } from "@/store/features/blood-transfer-slice";
+import {
+  fetchBloodTransfers,
+  fetchBloodTransfersMeta,
+} from "@/store/features/blood-transfer-slice";
 import { AppDispatch, useSelector } from "@/store/store";
 import { formatFilters } from "@/util/query-builder";
 import {
@@ -44,25 +47,25 @@ export default function BloodTransfersPage() {
   const [search, setSearch] = useState<string>("");
   const [tab, setTab] = useState<"incoming" | "outgoing">("outgoing");
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
-  const transfers = useSelector(state => state.bloodTransfer.data)
-  const stats = useSelector(state => state.bloodTransfer.stats)
-  const fetchLoading = useSelector(state => state.bloodTransfer.fetchLoading)
+  const transfers = useSelector((state) => state.bloodTransfer.data);
+  const stats = useSelector((state) => state.bloodTransfer.stats);
+  const fetchLoading = useSelector((state) => state.bloodTransfer.fetchLoading);
 
   // Effect to handle filter changes (same as before)
   //
   useEffect(() => {
-    dispatch(fetchBloodTransfersMeta({ id: user?.organizerProfile?.id }))
-  }, [dispatch, user?.organizerProfile?.id])
-
+    dispatch(fetchBloodTransfersMeta({ id: user?.organizerProfile?.id }));
+  }, [dispatch, user?.organizerProfile?.id]);
 
   useEffect(() => {
     const formattedFilters = formatFilters(columnFilters);
 
-    const tabFilter = tab === "incoming"
-      ? { toOrganizer: user?.organizerProfile?.id }
-      : { fromOrganizer: user?.organizerProfile?.id };
+    const tabFilter =
+      tab === "incoming"
+        ? { toOrganizer: user?.organizerProfile?.id }
+        : { fromOrganizer: user?.organizerProfile?.id };
 
     dispatch(
       fetchBloodTransfers({
@@ -71,7 +74,8 @@ export default function BloodTransfersPage() {
             page: pagination.pageIndex + 1,
             pageSize: pagination.pageSize,
           },
-          populate: 'toOrganizer, fromOrganizer, requestedBloodPouches.bloodGroup, bloodGroup',
+          populate:
+            "toOrganizer, fromOrganizer, requestedBloodPouches.bloodGroup, bloodGroup",
           filters: {
             ...formattedFilters.filter,
             ...tabFilter,
@@ -83,21 +87,19 @@ export default function BloodTransfersPage() {
                       $containsi: debouncedValue,
                     },
                   },
-                }
+                },
               ],
             }),
           },
           ...(sorting?.[0]?.id
             ? {
-              sort: [
-                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
-              ],
-            }
+                sort: [
+                  `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+                ],
+              }
             : {
-              sort: [
-                `createdAt:desc`,
-              ]
-            }),
+                sort: [`createdAt:desc`],
+              }),
         },
       })
     ).finally(() => {
@@ -154,7 +156,9 @@ export default function BloodTransfersPage() {
     },
   });
 
-  const breadcrumbItems = [{ label: "Blood Transfers", href: "/blood-transfers" }];
+  const breadcrumbItems = [
+    { label: "Blood Transfers", href: "/blood-transfers" },
+  ];
 
   return (
     <div className="w-full space-y-4">
@@ -170,7 +174,9 @@ export default function BloodTransfersPage() {
             </Link>
           </Button>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Blood Transfers</h2>
+            <h2 className="text-3xl font-bold tracking-tight">
+              Blood Transfers
+            </h2>
             <span className="text-sm">
               Total records : {filteredData?.length}
             </span>
@@ -187,14 +193,18 @@ export default function BloodTransfersPage() {
             }}
             className="w-full"
           />
-          <Button onClick={() => navigate("/blood-transfers/add")}>Request Blood Transfer</Button>
+          <Button onClick={() => navigate("/blood-transfers/add")}>
+            Request Blood Transfer
+          </Button>
         </div>
       </div>
 
       <div className="flex gap-5 py-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Incoming Transfer Requests Count</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Incoming Transfer Requests Count
+            </CardTitle>
             <Droplet className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
@@ -206,7 +216,9 @@ export default function BloodTransfersPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Outgoing Transfer Requests Count</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Outgoing Transfer Requests Count
+            </CardTitle>
             <Droplet className="h-4 w-4 text-amber-600" />
           </CardHeader>
 
@@ -215,7 +227,6 @@ export default function BloodTransfersPage() {
               {stats?.totalOutgoingBloodTransfersCount || 0}
             </span>
           </CardContent>
-
         </Card>
       </div>
       {/* Compact Tabs implementation */}
@@ -224,7 +235,7 @@ export default function BloodTransfersPage() {
           value={tab}
           onValueChange={(value) => {
             setTab(value as "incoming" | "outgoing");
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
           }}
           className="w-auto"
         >

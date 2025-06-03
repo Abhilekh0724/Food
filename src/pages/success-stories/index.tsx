@@ -42,7 +42,7 @@ export default function SuccessStoriesPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [search, setSearch] = useState<string>("");
-  const debouncedValue = useDebounce(search, 3000);
+  const debouncedValue = useDebounce(search, 1000);
 
   // Effect to handle filter changes
   useEffect(() => {
@@ -60,36 +60,34 @@ export default function SuccessStoriesPage() {
             ...formattedFilters.filter,
             ...(debouncedValue !== ""
               ? {
-                $or: [
-                  {
-                    studentName: {
-                      $like: debouncedValue,
+                  $or: [
+                    {
+                      studentName: {
+                        $like: debouncedValue,
+                      },
+                      "course.name": {
+                        $like: debouncedValue,
+                      },
+                      company: {
+                        $like: debouncedValue,
+                      },
+                      position: {
+                        $like: debouncedValue,
+                      },
                     },
-                    "course.name": {
-                      $like: debouncedValue,
-                    },
-                    company: {
-                      $like: debouncedValue,
-                    },
-                    position: {
-                      $like: debouncedValue,
-                    },
-                  },
-                ],
-              }
+                  ],
+                }
               : {}),
           },
           ...(sorting?.[0]?.id
             ? {
-              sort: [
-                `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
-              ],
-            }
+                sort: [
+                  `${sorting?.[0]?.id}:${sorting?.[0]?.desc ? "desc" : "asc"}`,
+                ],
+              }
             : {
-              sort: [
-                'createdAt:desc',
-              ],
-            }),
+                sort: ["createdAt:desc"],
+              }),
         },
       })
     );
