@@ -243,15 +243,45 @@ const ReceiverInfoForm = ({
 };
 
 const foodCategories = [
-  "Appetizers",
+  "Pizza",
+  "Burger",
+  "Pasta",
+  "Salad",
+  "Dessert",
+  "Drink",
+  "Appetizer",
   "Main Course",
-  "Desserts",
-  "Beverages",
-  "Salads",
-  "Soups",
-  "Breakfast",
-  "Lunch",
-  "Dinner",
+  "Side Dish",
+];
+
+const pizzaTypes = [
+  "Margherita",
+  "Pepperoni",
+  "Chicken",
+  "Vegetarian",
+  "Hawaiian",
+  "BBQ Chicken",
+  "Supreme",
+  "Custom",
+];
+
+const burgerTypes = [
+  "Classic",
+  "Cheese",
+  "Chicken",
+  "Veggie",
+  "Double Patty",
+  "Spicy",
+  "Custom",
+];
+
+const pastaTypes = [
+  "Spaghetti",
+  "Fettuccine",
+  "Penne",
+  "Lasagna",
+  "Ravioli",
+  "Custom",
 ];
 
 const dietaryOptions = [
@@ -270,6 +300,8 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
   const { id } = useParams();
   const [imagePreview, setImagePreview] = useState<string[]>([]);
 
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   const form = useForm<FormValues>({
     resolver: zodResolver(foodMenuSchema),
     defaultValues: {
@@ -287,9 +319,46 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
   });
 
   const onSubmit = (data: FormValues) => {
+    console.log("Form submitted with data:", {
+      ...data,
+      category: selectedCategory,
+      type: data.type || "Custom"
+    });
+    
+    // Log the selected category and type
+    console.log("Selected Category:", selectedCategory);
+    console.log("Selected Type:", data.type);
+    
     // TODO: Implement form submission
-    console.log(data);
-    toast.success("Food item added successfully!");
+    toast.success("Food item added successfully!", {
+      position: "bottom-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    navigate("/blood-stocks"); // Navigate back to the food items list
+  };
+
+  const getTypeOptions = (category: string) => {
+    switch (category.toLowerCase()) {
+      case "pizza":
+        return pizzaTypes;
+      case "burger":
+        return burgerTypes;
+      case "pasta":
+        return pastaTypes;
+      default:
+        return [];
+    }
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    form.setValue("category", value);
+    form.setValue("type", "");
   };
 
   return (
@@ -298,7 +367,7 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
         <Card className="my-6 p-2 sm:p-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Utensils className="h-5 w-5 text-red-500" />
+              <Utensils className="h-5 w-5 text-gray-600" />
               {isEdit ? "Update" : "Add New"} Food Item
             </CardTitle>
             <CardDescription>
@@ -312,10 +381,10 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-red-700 font-medium">Food Name *</FormLabel>
+                    <FormLabel className="text-gray-700 font-medium">Food Name *</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-white/80 border-red-200 focus:ring-red-400"
+                        className="bg-white/80 border-gray-200 focus:ring-gray-400"
                         placeholder="Enter food name"
                         {...field}
                       />
@@ -330,13 +399,13 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-red-700 font-medium">Category *</FormLabel>
+                    <FormLabel className="text-gray-700 font-medium">Category *</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={handleCategoryChange}
+                      value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-white/80 border-red-200 focus:ring-red-400">
+                        <SelectTrigger className="bg-white/80 border-gray-200 focus:ring-gray-400">
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                       </FormControl>
@@ -352,6 +421,43 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-medium">Type *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!selectedCategory}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white/80 border-gray-200 focus:ring-gray-400">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {getTypeOptions(selectedCategory).map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                        {selectedCategory && (
+                          <SelectItem value="custom">
+                            Custom {selectedCategory} Type
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Select the type or variation of the {selectedCategory.toLowerCase()}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -360,16 +466,27 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-red-700 font-medium">Price *</FormLabel>
+                    <FormLabel className="text-gray-700 font-medium">Price *</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-[50%] h-4 w-4 text-red-400" />
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-[50%] h-4 w-4 text-gray-400" />
                         <Input
-                          className="pl-9 bg-white/80 border-red-200 focus:ring-red-400"
+                          className="pl-9 bg-white/80 border-gray-200 focus:ring-gray-400"
                           placeholder="Enter price"
                           type="number"
                           {...field}
-                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                          value={field.value === 0 ? "" : field.value}
+                          onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+                          onFocus={(e) => {
+                            if (field.value === 0) {
+                              e.target.value = "";
+                            }
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === "") {
+                              field.onChange(0);
+                            }
+                          }}
                         />
                       </div>
                     </FormControl>
@@ -383,16 +500,27 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                 name="preparationTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-red-700 font-medium">Preparation Time (minutes) *</FormLabel>
+                    <FormLabel className="text-gray-700 font-medium">Preparation Time (minutes) *</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-[50%] h-4 w-4 text-red-400" />
+                        <Clock className="absolute left-3 top-1/2 -translate-y-[50%] h-4 w-4 text-gray-400" />
                         <Input
-                          className="pl-9 bg-white/80 border-red-200 focus:ring-red-400"
+                          className="pl-9 bg-white/80 border-gray-200 focus:ring-gray-400"
                           placeholder="Enter preparation time"
                           type="number"
                           {...field}
-                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                          value={field.value === 0 ? "" : field.value}
+                          onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+                          onFocus={(e) => {
+                            if (field.value === 0) {
+                              e.target.value = "";
+                            }
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === "") {
+                              field.onChange(0);
+                            }
+                          }}
                         />
                       </div>
                     </FormControl>
@@ -407,10 +535,10 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-red-700 font-medium">Description *</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">Description *</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="bg-white/80 border-red-200 focus:ring-red-400"
+                      className="bg-white/80 border-gray-200 focus:ring-gray-400"
                       placeholder="Enter food description"
                       {...field}
                     />
@@ -446,13 +574,13 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                 type="button"
                 variant="outline"
                 onClick={() => navigate(-1)}
-                className="border-red-200 text-red-700 hover:bg-red-50"
+                className="border-gray-200 text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600"
+                className="bg-gradient-to-r from-gray-600 to-gray-500 text-white hover:from-gray-700 hover:to-gray-600"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? (

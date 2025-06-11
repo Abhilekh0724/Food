@@ -747,4 +747,9 @@ export interface FoodItem {
    * Optional image URL for the food item
    */
   imageUrl?: string;
+
+  /**
+   * Preparation time in minutes
+   */
+  preparationTime: number;
 }

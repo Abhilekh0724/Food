@@ -251,19 +251,19 @@ export function DashboardSidebar({
   return (
     <div
       className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-gradient-to-br from-red-100 via-pink-100 to-pink-50 shadow-xl duration-300 ease-in-out mt-[3.5rem] rounded-tr-3xl rounded-br-3xl",
+        "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-background shadow-xl duration-300 ease-in-out mt-[3.5rem] rounded-tr-3xl rounded-br-3xl",
         open ? "w-[16rem]" : "w-[4rem]"
       )}
     >
       <div className="flex items-center justify-center py-6">
-        <div className="bg-white rounded-full shadow-lg flex items-center justify-center w-16 h-16 border-4 border-red-200">
-          <span className="text-3xl font-bold text-red-400" style={{ fontFamily: 'Quicksand, sans-serif' }}>🍽️</span>
+        <div className="bg-white rounded-full shadow-lg flex items-center justify-center w-16 h-16 border-4 border-border">
+          <span className="text-3xl font-bold text-primary" style={{ fontFamily: 'Quicksand, sans-serif' }}>🍽️</span>
         </div>
       </div>
       <div className="border-b px-4 py-2">
         <div className="flex items-center justify-between">
           {open && (
-            <span className="font-extrabold text-lg text-red-700 transition-all duration-300" style={{ fontFamily: 'Quicksand, sans-serif', letterSpacing: 1 }}>
+            <span className="font-extrabold text-lg text-foreground transition-all duration-300" style={{ fontFamily: 'Quicksand, sans-serif', letterSpacing: 1 }}>
               Menu
             </span>
           )}
@@ -278,10 +278,10 @@ export function DashboardSidebar({
             if (item.type === "heading") {
               return open ? (
                 <div key={index} className="flex items-center gap-2 px-3 pt-5">
-                  <span className="text-xs font-extrabold text-pink-400 uppercase tracking-widest" style={{ fontFamily: 'Quicksand, sans-serif' }}>
+                  <span className="text-xs font-extrabold text-muted-foreground uppercase tracking-widest" style={{ fontFamily: 'Quicksand, sans-serif' }}>
                     {item.title}
                   </span>
-                  <div className="h-[1px] flex-1 bg-pink-200" />
+                  <div className="h-[1px] flex-1 bg-border" />
                 </div>
               ) : null;
             }
@@ -292,11 +292,11 @@ export function DashboardSidebar({
           })}
         </nav>
       </ScrollArea>
-      <div className="bg-pink-100/80 flex justify-end rounded-bl-3xl">
+      <div className="bg-muted/80 flex justify-end rounded-bl-3xl">
         <Button
           size="icon"
           className={cn(
-            "transition-all duration-300 bg-red-400 hover:bg-red-500 text-white shadow-md",
+            "transition-all duration-300 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md",
             !open && "rotate-180 w-full"
           )}
           onClick={() => onOpenChange?.(!open)}

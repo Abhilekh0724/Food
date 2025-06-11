@@ -14,6 +14,7 @@ const mockApi = {
       description: "Classic pizza with tomato, mozzarella, and basil.",
       addedDate: "2024-06-01",
       imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591",
+      preparationTime: 20,
     },
     {
       id: "2",
@@ -25,6 +26,7 @@ const mockApi = {
       description: "Crisp romaine lettuce with Caesar dressing and croutons.",
       addedDate: "2024-06-02",
       imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
+      preparationTime: 15,
     },
     {
       id: "3",
@@ -36,6 +38,7 @@ const mockApi = {
       description: "Warm chocolate cake with a gooey center.",
       addedDate: "2024-06-03",
       imageUrl: "https://images.unsplash.com/photo-1519864600265-abb23847ef2c",
+      preparationTime: 30,
     },
   ]),
   delete: async (id: string) => Promise.resolve(id),
