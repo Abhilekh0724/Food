@@ -143,7 +143,7 @@ const bloodBankSidebarNavItems = [
 
   {
     type: "heading",
-    title: "Food Stock Management",
+    title: "Food Stock",
   },
 
   {
@@ -190,9 +190,7 @@ export function DashboardSidebar({
   onOpenChange,
 }: DashboardSidebarProps) {
   const location = useLocation();
-
   const { user } = useAuth();
-
   devLog(user?.organizerProfile?.type, "ususuusususer");
 
   const NavItem = ({ item, collapsed }: { item: any; collapsed: boolean }) => {
@@ -212,16 +210,17 @@ export function DashboardSidebar({
       <Link
         to={item.href!}
         className={cn(
-          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+          "flex items-center gap-3 rounded-xl px-4 py-3 text-base font-semibold shadow-sm bg-white/70 hover:bg-orange-100 hover:shadow-md transition-all duration-200 border border-transparent hover:border-orange-300",
           (item.href === "/"
             ? location.pathname === "/"
             : location.pathname.includes(item.href) &&
-              location.pathname !== "/") && "bg-accent text-accent-foreground",
-          !open && "justify-center px-2"
+              location.pathname !== "/") && "bg-orange-200 text-orange-900 border-orange-400",
+          !open && "justify-center px-2 text-lg"
         )}
+        style={{ fontFamily: 'Quicksand, sans-serif' }}
       >
         {item.icon && (
-          <item.icon className={cn("h-4 w-4", !open && "w-5 h-5")} />
+          <item.icon className={cn("h-5 w-5", !open && "w-6 h-6")}/>
         )}
         {open && (
           <span className="transition-all duration-300">{item.title}</span>
@@ -252,21 +251,26 @@ export function DashboardSidebar({
   return (
     <div
       className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-background duration-300 ease-in-out mt-[3.5rem]",
+        "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-gradient-to-br from-red-100 via-pink-100 to-pink-50 shadow-xl duration-300 ease-in-out mt-[3.5rem] rounded-tr-3xl rounded-br-3xl",
         open ? "w-[16rem]" : "w-[4rem]"
       )}
     >
-      <div className="border-b px-4 py-4">
+      <div className="flex items-center justify-center py-6">
+        <div className="bg-white rounded-full shadow-lg flex items-center justify-center w-16 h-16 border-4 border-red-200">
+          <span className="text-3xl font-bold text-red-400" style={{ fontFamily: 'Quicksand, sans-serif' }}>🍽️</span>
+        </div>
+      </div>
+      <div className="border-b px-4 py-2">
         <div className="flex items-center justify-between">
           {open && (
-            <span className="font-semibold transition-all duration-300">
+            <span className="font-extrabold text-lg text-red-700 transition-all duration-300" style={{ fontFamily: 'Quicksand, sans-serif', letterSpacing: 1 }}>
               Menu
             </span>
           )}
         </div>
       </div>
       <ScrollArea className="flex-1 px-2 py-2">
-        <nav className="space-y-1">
+        <nav className="space-y-2">
           {(user?.organizerProfile?.type === "Blood Bank"
             ? bloodBankSidebarNavItems
             : communitySidebarNavItems
@@ -274,14 +278,13 @@ export function DashboardSidebar({
             if (item.type === "heading") {
               return open ? (
                 <div key={index} className="flex items-center gap-2 px-3 pt-5">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">
+                  <span className="text-xs font-extrabold text-pink-400 uppercase tracking-widest" style={{ fontFamily: 'Quicksand, sans-serif' }}>
                     {item.title}
                   </span>
-                  <div className="h-[1px] flex-1 bg-border" />
+                  <div className="h-[1px] flex-1 bg-pink-200" />
                 </div>
               ) : null;
             }
-
             if (item.type === "item") {
               return <NavItem key={index} item={item} collapsed={!open} />;
             }
@@ -289,16 +292,16 @@ export function DashboardSidebar({
           })}
         </nav>
       </ScrollArea>
-      <div className="bg-primary/50 flex justify-end">
+      <div className="bg-pink-100/80 flex justify-end rounded-bl-3xl">
         <Button
           size="icon"
           className={cn(
-            "transition-all duration-300",
+            "transition-all duration-300 bg-red-400 hover:bg-red-500 text-white shadow-md",
             !open && "rotate-180 w-full"
           )}
           onClick={() => onOpenChange?.(!open)}
         >
-          <ChevronLeft size={15} className="h-10 w-10 text-white font-bold" />
+          <ChevronLeft size={20} className="h-10 w-10 font-bold" />
         </Button>
       </div>
     </div>

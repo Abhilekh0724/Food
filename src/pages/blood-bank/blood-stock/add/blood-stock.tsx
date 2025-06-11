@@ -79,6 +79,7 @@ import { foodMenuSchema, FormValues } from "../schema/blood-stock-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "react-toastify";
 
 interface ReceiverInfo {
   firstName: string;
@@ -288,6 +289,7 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
   const onSubmit = (data: FormValues) => {
     // TODO: Implement form submission
     console.log(data);
+    toast.success("Food item added successfully!");
   };
 
   return (
@@ -367,7 +369,7 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                           placeholder="Enter price"
                           type="number"
                           {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
                         />
                       </div>
                     </FormControl>
@@ -390,7 +392,7 @@ const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
                           placeholder="Enter preparation time"
                           type="number"
                           {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
                         />
                       </div>
                     </FormControl>
