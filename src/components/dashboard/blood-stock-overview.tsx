@@ -1,14 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useSelector } from "@/store/store";
+import { useSelector, useDispatch } from "@/store/store";
 import { Droplet } from "lucide-react"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { getBloodBankDashboardStats } from "@/store/features/dashboard-slice";
 
 export function BloodStockOverview() {
-
-
+  const dispatch = useDispatch();
   const stats = useSelector((state) => state.dashboard.bloodBankStats);
+  const user = useSelector((state) => state.auth.user);
 
+  useEffect(() => {
+    if (user?.organizerProfile?.id) {
+      dispatch(getBloodBankDashboardStats({ user }));
+    }
+  }, [dispatch, user]);
 
+  if (!user?.organizerProfile?.id) {
+    return null;
+  }
 
   return (
     <>

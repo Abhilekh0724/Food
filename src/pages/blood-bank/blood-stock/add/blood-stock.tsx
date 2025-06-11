@@ -2,7 +2,13 @@ import DashboardBreadcrumb from "@/components/common/breadcrumb";
 import Loader from "@/components/common/loader";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -26,6 +32,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,12 +66,19 @@ import {
   Calendar as CalendarIcon,
   Check,
   ChevronsUpDown,
+  Clock,
+  DollarSign,
+  Image as ImageIcon,
   Loader2,
+  Utensils,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { bloodStockSchema, FormValues } from "../schema/blood-stock-schema";
+import { foodMenuSchema, FormValues } from "../schema/blood-stock-schema";
+import { Textarea } from "@/components/ui/textarea";
+import { z } from "zod";
+import { Switch } from "@/components/ui/switch";
 
 interface ReceiverInfo {
   firstName: string;
@@ -81,6 +95,20 @@ interface ReceiverInfo {
   wardNo: string;
 }
 
+interface Donor {
+  id: string;
+  attributes: {
+    donor: {
+      data: {
+        attributes: {
+          username: string;
+        };
+        id: string;
+      };
+    };
+  };
+}
+
 const ReceiverInfoForm = ({
   receiverInfo,
   onSave,
@@ -92,26 +120,20 @@ const ReceiverInfoForm = ({
   onCancel: () => void;
   isSubmitting: boolean;
 }) => {
-  devLog(receiverInfo, "receiverInfo");
-
-  const [formData, setFormData] = useState<ReceiverInfo>(
-    receiverInfo || {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      district: "",
-      occupation: "",
-      country: "",
-      municipality: "",
-      city: "",
-      streetAddress: "",
-      zipCode: "",
-      wardNo: "",
-    }
-  );
-
-  devLog(formData, "formData");
+  const [formData, setFormData] = useState<ReceiverInfo>({
+    firstName: receiverInfo?.firstName || "",
+    lastName: receiverInfo?.lastName || "",
+    email: receiverInfo?.email || "",
+    phone: receiverInfo?.phone || "",
+    district: receiverInfo?.district || "",
+    occupation: receiverInfo?.occupation || "",
+    country: receiverInfo?.country || "",
+    municipality: receiverInfo?.municipality || "",
+    city: receiverInfo?.city || "",
+    streetAddress: receiverInfo?.streetAddress || "",
+    zipCode: receiverInfo?.zipCode || "",
+    wardNo: receiverInfo?.wardNo || "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -122,136 +144,84 @@ const ReceiverInfoForm = ({
   };
 
   return (
-    <DialogContent className="max-w-4xl">
+    <DialogContent className="max-w-4xl bg-white/90 backdrop-blur-sm border-red-200 shadow-lg">
       <DialogHeader>
-        <DialogTitle>Receiver Information</DialogTitle>
-        <DialogDescription>
+        <DialogTitle className="text-2xl font-bold text-red-700">Receiver Information</DialogTitle>
+        <DialogDescription className="text-red-500">
           Details of the person who received this blood pouch
         </DialogDescription>
       </DialogHeader>
 
       <div className="grid grid-cols-2 gap-4 py-4">
         <div className="space-y-2">
-          <Label htmlFor="firstName">First Name*</Label>
+          <Label htmlFor="firstName" className="text-red-700 font-medium">First Name*</Label>
           <Input
             id="firstName"
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
             required
+            className="bg-white/80 border-red-200 focus:ring-red-400"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name*</Label>
+          <Label htmlFor="lastName" className="text-red-700 font-medium">Last Name*</Label>
           <Input
             id="lastName"
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
             required
+            className="bg-white/80 border-red-200 focus:ring-red-400"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-red-700 font-medium">Email</Label>
           <Input
             id="email"
             name="email"
             type="email"
             value={formData.email}
             onChange={handleChange}
+            className="bg-white/80 border-red-200 focus:ring-red-400"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="phone">Phone*</Label>
+          <Label htmlFor="phone" className="text-red-700 font-medium">Phone*</Label>
           <Input
             id="phone"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
             required
+            className="bg-white/80 border-red-200 focus:ring-red-400"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="district">District*</Label>
+          <Label htmlFor="district" className="text-red-700 font-medium">District*</Label>
           <Input
             id="district"
             name="district"
             value={formData.district}
             onChange={handleChange}
             required
+            className="bg-white/80 border-red-200 focus:ring-red-400"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="occupation">Occupation</Label>
+          <Label htmlFor="occupation" className="text-red-700 font-medium">Occupation</Label>
           <Input
             id="occupation"
             name="occupation"
             value={formData.occupation}
             onChange={handleChange}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="country">Country*</Label>
-          <Input
-            id="country"
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="municipality">Municipality*</Label>
-          <Input
-            id="municipality"
-            name="municipality"
-            value={formData.municipality}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="city">City*</Label>
-          <Input
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="streetAddress">Street Address*</Label>
-          <Input
-            id="streetAddress"
-            name="streetAddress"
-            value={formData.streetAddress}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="zipCode">Zip Code</Label>
-          <Input
-            id="zipCode"
-            name="zipCode"
-            value={formData.zipCode}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="wardNo">Ward No</Label>
-          <Input
-            id="wardNo"
-            name="wardNo"
-            value={formData.wardNo}
-            onChange={handleChange}
+            className="bg-white/80 border-red-200 focus:ring-red-400"
           />
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" onClick={onCancel}>
+        <Button variant="outline" onClick={onCancel} className="border-red-200 hover:bg-red-100">
           Cancel
         </Button>
         <Button
@@ -262,551 +232,242 @@ const ReceiverInfoForm = ({
             !formData.phone ||
             isSubmitting
           }
+          className="bg-gradient-to-r from-red-400 to-pink-300 text-white font-bold shadow-md hover:from-red-500 hover:to-pink-400"
         >
-          {isSubmitting ? <Loader2 className="animate-spin" /> : "Save"}
+          {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : "Save"}
         </Button>
       </DialogFooter>
     </DialogContent>
   );
 };
 
-const AddBloodStock = ({ isEdit = false }: { isEdit?: boolean }) => {
-  const { id } = useParams();
+const foodCategories = [
+  "Appetizers",
+  "Main Course",
+  "Desserts",
+  "Beverages",
+  "Salads",
+  "Soups",
+  "Breakfast",
+  "Lunch",
+  "Dinner",
+];
+
+const dietaryOptions = [
+  "Vegetarian",
+  "Vegan",
+  "Gluten-Free",
+  "Dairy-Free",
+  "Nut-Free",
+  "Halal",
+  "Kosher",
+];
+
+const AddFoodItem = ({ isEdit = false }: { isEdit?: boolean }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { id } = useParams();
+  const [imagePreview, setImagePreview] = useState<string[]>([]);
 
-  const fetchLoading = useSelector((state) => state.bloodPouch.fetchLoading);
-  const loading = useSelector((state) => state.bloodPouch.isLoading);
-  const singleStock = useSelector((state) => state.bloodPouch.singleData);
-  const donors = useSelector((state) => state.donor.data);
-  const bloodGroups = useSelector((state) => state.common.bloodGroups);
+  const form = useForm<FormValues>({
+    resolver: zodResolver(foodMenuSchema),
+    defaultValues: {
+      name: "",
+      category: "",
+      price: 0,
+      description: "",
+      imageUrl: undefined,
+      available: true,
+      preparationTime: 0,
+      calories: 0,
+      ingredients: [],
+      dietaryInfo: [],
+    },
+  });
 
-  const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [showReceiverForm, setShowReceiverForm] = useState(false);
-  const debouncedValue = useDebounce(searchQuery, 1000);
-
-  useEffect(() => {
-    if (id) {
-      dispatch(
-        fetchSingleBloodPouches({
-          id,
-          params: {
-            populate: "donor.donorProfile, bloodGroup, usedBy",
-          },
-        })
-      );
-    }
-  }, [id]);
-
-  const form = useForm<FormValues & { isUsed: boolean; usedBy?: ReceiverInfo }>(
-    {
-      resolver: zodResolver(bloodStockSchema),
-      defaultValues: {
-        pouchId: generateRandomString({ length: 8 }).toString(),
-        bloodType: "",
-        bloodGroup: "",
-        donor: "",
-        donationDate: new Date(),
-        expiry: new Date(),
-        isUsed: false,
-        usedBy: undefined,
-      },
-    }
-  );
-
-  useEffect(() => {
-    if (singleStock && id) {
-      const usedBy = singleStock?.attributes?.usedBy;
-      const initialValues = {
-        pouchId:
-          singleStock?.attributes?.pouchId ||
-          generateRandomString({ length: 8 }).toString(),
-        bloodType: singleStock?.attributes?.bloodType || "",
-        bloodGroup:
-          singleStock?.attributes?.bloodGroup?.data?.id?.toString() || "",
-        donor: singleStock?.attributes?.donor?.data?.id?.toString() || "",
-        donationDate: singleStock?.attributes?.donationDate
-          ? new Date(singleStock?.attributes?.donationDate)
-          : new Date(),
-        expiry: singleStock?.attributes?.expiry
-          ? new Date(singleStock?.attributes?.expiry)
-          : new Date(),
-        isUsed: !!singleStock?.attributes?.isUsed,
-        usedBy: usedBy
-          ? {
-              firstName: usedBy.firstName || "",
-              lastName: usedBy.lastName || "",
-              email: usedBy.email || "",
-              phone: usedBy.phone || "",
-              district: usedBy.district || "",
-              occupation: usedBy.occupation || "",
-              country: usedBy.country || "",
-              municipality: usedBy.municipality || "",
-              city: usedBy.city || "",
-              streetAddress: usedBy.streetAddress || "",
-              zipCode: usedBy.zipCode || "",
-              wardNo: usedBy.wardNo || "",
-            }
-          : undefined,
-      };
-
-      form.reset(initialValues);
-    }
-  }, [singleStock, form, id]);
-
-  const onSubmit = (
-    data: FormValues & { isUsed: boolean; usedBy?: ReceiverInfo }
-  ) => {
-    const submitData = {
-      ...data,
-      isUsed: form.getValues("isUsed"),
-      usedAt: form.getValues("isUsed") ? new Date().toISOString() : null,
-      usedBy: form.getValues("isUsed") ? form.getValues("usedBy") : null,
-    };
-
-    devLog(
-      submitData,
-      form.getValues("usedBy"),
-      form.getValues("isUsed"),
-      "submitData"
-    );
-
-    dispatch(
-      isEdit && id
-        ? updateBloodPouch({
-            data: submitData,
-            actionBy: user?.id,
-            id,
-          })
-        : createBloodPouch({
-            data: {
-              ...submitData,
-              organizer: user?.organizerProfile?.id,
-            },
-            navigate,
-            actionBy: user?.id,
-          })
-    );
+  const onSubmit = (data: FormValues) => {
+    // TODO: Implement form submission
+    console.log(data);
   };
 
-  useEffect(() => {
-    if (debouncedValue !== "") {
-      setIsSearching(true);
-      dispatch(
-        fetchDonors({
-          setIsSearching,
-          params: {
-            filters: {
-              organizer: {
-                id: user?.organizerProfile?.id,
-              },
-              ...(debouncedValue !== "" && {
-                $or: [
-                  {
-                    donor: {
-                      username: {
-                        $containsi: debouncedValue,
-                      },
-                    },
-                  },
-                  {
-                    donor: {
-                      email: {
-                        $containsi: debouncedValue,
-                      },
-                    },
-                  },
-                  {
-                    donor: {
-                      phone: {
-                        $containsi: debouncedValue,
-                      },
-                    },
-                  },
-                ],
-              }),
-            },
-            populate: "donor.donorProfile",
-          },
-        })
-      );
-    }
-  }, [debouncedValue, user?.organizerProfile?.id]);
-
-  const breadcrumbItems = [
-    { label: "Blood Stocks", href: "/blood-stocks" },
-    {
-      label: isEdit ? `Update Blood Stock` : "Add Blood Stock",
-      href: `/blood-stocks/${id || "add"}`,
-    },
-  ];
-
   return (
-    <>
-      <div className="mb-6">
-        <DashboardBreadcrumb items={breadcrumbItems} homeHref="/" />
-      </div>
-      {fetchLoading ? (
-        <Loader />
-      ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="flex gap-10 flex-wrap">
-              <Card className="my-6 p-2 sm:p-6 flex-[2]">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-20">
-                    {isEdit
-                      ? `Update Blood Stock Info of Pouch ${singleStock?.attributes?.pouchId}`
-                      : "Add New Blood Stock Info"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* <FormField
-                      control={form.control}
-                      name="pouchId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Pouch ID *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter pouch ID" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    /> */}
-                    <FormField
-                      control={form.control}
-                      name="bloodType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Blood Type *</FormLabel>
-                          <FormControl>
-                            <Select
-                              key={field.value}
-                              onValueChange={field.onChange}
-                              defaultValue={String(field.value)}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select Blood Type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {[
-                                  {
-                                    label: "Plasma",
-                                    value: "Pasma",
-                                  },
-                                  {
-                                    label: "Whole Blood",
-                                    value: "Whole Blood",
-                                  },
-                                  {
-                                    label: "Power Blood",
-                                    value: "Power Blood",
-                                  },
-                                ]?.map((bg, i) => (
-                                  <SelectItem key={i} value={String(bg?.value)}>
-                                    {bg?.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="bloodGroup"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Blood Group *</FormLabel>
-                          <FormControl>
-                            <Select
-                              key={field.value}
-                              onValueChange={field.onChange}
-                              defaultValue={String(field.value)}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select Blood Group" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {bloodGroups?.map((bg, i) => (
-                                  <SelectItem key={i} value={String(bg?.value)}>
-                                    {bg?.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="flex items-end w-full gap-3">
-                      <FormField
-                        control={form.control}
-                        name="donor"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col flex-1">
-                            <FormLabel>Donor</FormLabel>
-                            <div className="relative">
-                              <Popover open={open} onOpenChange={setOpen}>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      aria-expanded={open}
-                                      className="w-full justify-between"
-                                    >
-                                      {field.value &&
-                                      donors?.data
-                                        ?.map((d) => ({
-                                          label:
-                                            d?.attributes?.donor?.data
-                                              ?.attributes?.username,
-                                          value:
-                                            d?.attributes?.donor?.data?.id?.toString(),
-                                        }))
-                                        .find(
-                                          (option) =>
-                                            option.value === field.value
-                                        )?.label
-                                        ? donors?.data
-                                            ?.map((d) => ({
-                                              label:
-                                                d?.attributes?.donor?.data
-                                                  ?.attributes?.username,
-                                              value:
-                                                d?.attributes?.donor?.data?.id?.toString(),
-                                            }))
-                                            .find(
-                                              (option) =>
-                                                option.value === field.value
-                                            )?.label || "Select donor..."
-                                        : singleStock?.attributes?.donor?.data
-                                            ?.attributes?.username
-                                        ? singleStock?.attributes?.donor?.data
-                                            ?.attributes?.username
-                                        : "Select donor..."}
-                                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  className="p-0"
-                                  align="start"
-                                  style={{
-                                    width: "var(--radix-popover-trigger-width)",
-                                  }}
-                                >
-                                  <Command shouldFilter={false}>
-                                    <CommandInput
-                                      placeholder="Search donor..."
-                                      value={searchQuery}
-                                      onValueChange={setSearchQuery}
-                                    />
-                                    {isSearching ? (
-                                      <CommandEmpty>Searching...</CommandEmpty>
-                                    ) : (
-                                      <CommandEmpty>
-                                        No donors found
-                                      </CommandEmpty>
-                                    )}
-                                    <CommandGroup>
-                                      {donors?.data
-                                        ?.map((d) => ({
-                                          label: `${d?.attributes?.donor?.data?.attributes?.username} (${d?.attributes?.donor?.data?.attributes?.donorProfile?.data?.attributes?.donorId})`,
-                                          value: d?.attributes?.donor?.data?.id,
-                                        }))
-                                        ?.map((option, index) => (
-                                          <CommandItem
-                                            key={index}
-                                            value={option.value.toString()}
-                                            onSelect={() => {
-                                              form.setValue(
-                                                "donor",
-                                                option.value.toString()
-                                              );
-                                              setOpen(false);
-                                              setSearchQuery("");
-                                            }}
-                                          >
-                                            <Check
-                                              className={cn(
-                                                "mr-2 h-4 w-4",
-                                                field.value === option.value
-                                                  ? "opacity-100"
-                                                  : "opacity-0"
-                                              )}
-                                            />
-                                            {option.label}
-                                          </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Card className="my-6 p-2 sm:p-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Utensils className="h-5 w-5 text-red-500" />
+              {isEdit ? "Update" : "Add New"} Food Item
+            </CardTitle>
+            <CardDescription>
+              Enter the food item details to {isEdit ? "update" : "add"} it to the menu.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-red-700 font-medium">Food Name *</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="bg-white/80 border-red-200 focus:ring-red-400"
+                        placeholder="Enter food name"
+                        {...field}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                      <a
-                        href="http://localhost:3000/members/add"
-                        target="__blank"
-                      >
-                        <Button
-                          type="button"
-                          className="right-2 top-2 text-white px-2 py-1 rounded"
-                          size="sm"
-                        >
-                          Add New
-                        </Button>
-                      </a>
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="donationDate"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Donation Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => date > new Date()}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="expiry"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Expiry Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-red-700 font-medium">Category *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white/80 border-red-200 focus:ring-red-400">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {foodCategories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-red-700 font-medium">Price *</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-[50%] h-4 w-4 text-red-400" />
+                        <Input
+                          className="pl-9 bg-white/80 border-red-200 focus:ring-red-400"
+                          placeholder="Enter price"
+                          type="number"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="preparationTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-red-700 font-medium">Preparation Time (minutes) *</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Clock className="absolute left-3 top-1/2 -translate-y-[50%] h-4 w-4 text-red-400" />
+                        <Input
+                          className="pl-9 bg-white/80 border-red-200 focus:ring-red-400"
+                          placeholder="Enter preparation time"
+                          type="number"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-red-700 font-medium">Description *</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="bg-white/80 border-red-200 focus:ring-red-400"
+                      placeholder="Enter food description"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="available"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Available</FormLabel>
+                    <FormDescription>
+                      Toggle to mark this item as available or unavailable
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end gap-4">
               <Button
-                disabled={loading}
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/blood-stocks")}
+                onClick={() => navigate(-1)}
+                className="border-red-200 text-red-700 hover:bg-red-50"
               >
                 Cancel
               </Button>
-              <Button disabled={loading} type="submit">
-                {loading ? (
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? (
                   <>
-                    <Loader2 className="animate-spin" />
-                    Please wait
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isEdit ? "Updating..." : "Adding..."}
                   </>
-                ) : isEdit ? (
-                  "Update Stock"
                 ) : (
-                  "Save Stock"
+                  isEdit ? "Update Food Item" : "Add Food Item"
                 )}
               </Button>
             </div>
-
-            <Dialog open={showReceiverForm} onOpenChange={setShowReceiverForm}>
-              <DialogTrigger asChild />
-              <ReceiverInfoForm
-                receiverInfo={
-                  form.watch("usedBy") || singleStock?.attributes?.usedBy
-                }
-                onSave={(data) => {
-                  form.setValue("usedBy", data);
-                  setShowReceiverForm(false);
-                }}
-                onCancel={() => setShowReceiverForm(false)}
-                isSubmitting={loading || false}
-              />
-            </Dialog>
-          </form>
-        </Form>
-      )}
-    </>
+          </CardContent>
+        </Card>
+      </form>
+    </Form>
   );
 };
 
-export default AddBloodStock;
+export default AddFoodItem;

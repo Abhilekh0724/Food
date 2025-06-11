@@ -22,8 +22,6 @@ import { cn } from "@/lib/utils";
 import { devLog } from "@/util/logger";
 import {
   Activity,
-  AlertTriangle,
-  BarChart,
   ChevronDown,
   ChevronLeft,
   Droplets,
@@ -32,9 +30,9 @@ import {
   LayoutDashboard,
   Repeat,
   Settings,
-  SquareM,
   UserRoundCog,
   Users2Icon,
+  Utensils,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -52,9 +50,6 @@ const communitySidebarNavItems = [
     icon: LayoutDashboard,
   },
 
-
-
-
   {
     type: "heading",
     title: "Blood Need Management",
@@ -62,36 +57,15 @@ const communitySidebarNavItems = [
 
   {
     type: "item",
-    title: "Blood Requests",
-    href: "/blood-requests",
+    title: "Blood Needs",
+    href: "/community/blood-needs",
     icon: HeartPulse,
   },
-
   {
     type: "item",
     title: "Donors",
     icon: HelpingHand,
-    href: "/donors",
-    items: [],
-  },
-
-  {
-    type: "heading",
-    title: "User Management",
-  },
-  {
-    type: "item",
-    title: "Staffs",
-    icon: Users2Icon,
-    href: "/staffs",
-    items: [],
-  },
-
-  {
-    type: "item",
-    title: "Admins",
-    icon: UserRoundCog,
-    href: "/admins",
+    href: "community/donors",
     items: [],
   },
 
@@ -111,6 +85,14 @@ const communitySidebarNavItems = [
     type: "heading",
     title: "Settings",
   },
+  {
+    type: "item",
+    title: "Staffs",
+    icon: Users2Icon,
+    href: "/staffs",
+    items: [],
+  },
+
   {
     type: "item",
     title: "Settings",
@@ -161,14 +143,14 @@ const bloodBankSidebarNavItems = [
 
   {
     type: "heading",
-    title: "Blood Stock Management",
+    title: "Food Stock Management",
   },
 
   {
     type: "item",
-    title: "Blood Stocks",
+    title: "Food Stocks",
     href: "/blood-stocks",
-    icon: Droplets,
+    icon: Utensils,
   },
 
   {
@@ -209,9 +191,9 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const location = useLocation();
 
-  const { user } = useAuth()
+  const { user } = useAuth();
 
-  devLog(user?.organizerProfile?.type, "ususuusususer")
+  devLog(user?.organizerProfile?.type, "ususuusususer");
 
   const NavItem = ({ item, collapsed }: { item: any; collapsed: boolean }) => {
     if (item.items?.length) {
@@ -234,7 +216,7 @@ export function DashboardSidebar({
           (item.href === "/"
             ? location.pathname === "/"
             : location.pathname.includes(item.href) &&
-            location.pathname !== "/") && "bg-accent text-accent-foreground",
+              location.pathname !== "/") && "bg-accent text-accent-foreground",
           !open && "justify-center px-2"
         )}
       >
@@ -281,22 +263,14 @@ export function DashboardSidebar({
               Menu
             </span>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-6 w-6 transition-all duration-300",
-              !open && "rotate-180 w-full"
-            )}
-            onClick={() => onOpenChange?.(!open)}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
         </div>
       </div>
       <ScrollArea className="flex-1 px-2 py-2">
         <nav className="space-y-1">
-          {(user?.organizerProfile?.type === 'Blood Bank' ? bloodBankSidebarNavItems : communitySidebarNavItems).map((item, index) => {
+          {(user?.organizerProfile?.type === "Blood Bank"
+            ? bloodBankSidebarNavItems
+            : communitySidebarNavItems
+          ).map((item, index) => {
             if (item.type === "heading") {
               return open ? (
                 <div key={index} className="flex items-center gap-2 px-3 pt-5">
@@ -315,6 +289,18 @@ export function DashboardSidebar({
           })}
         </nav>
       </ScrollArea>
+      <div className="bg-primary/50 flex justify-end">
+        <Button
+          size="icon"
+          className={cn(
+            "transition-all duration-300",
+            !open && "rotate-180 w-full"
+          )}
+          onClick={() => onOpenChange?.(!open)}
+        >
+          <ChevronLeft size={15} className="h-10 w-10 text-white font-bold" />
+        </Button>
+      </div>
     </div>
   );
 }
@@ -366,7 +352,7 @@ function SidebarSubmenu({
                 className={cn(
                   "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground",
                   location.pathname === item.href &&
-                  "bg-accent text-accent-foreground"
+                    "bg-accent text-accent-foreground"
                 )}
               >
                 {item.icon && <item.icon className="h-4 w-4" />}
@@ -406,7 +392,7 @@ function SidebarSubmenu({
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
                   location.pathname === item.href &&
-                  "bg-accent text-accent-foreground"
+                    "bg-accent text-accent-foreground"
                 )}
               >
                 {Icon && <Icon className="h-4 w-4" />}

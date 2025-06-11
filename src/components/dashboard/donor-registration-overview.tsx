@@ -1,9 +1,21 @@
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { useAuth } from "@/context/auth-context";
 import { useSelector } from "@/store/store";
+import { devLog } from "@/util/logger";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
-export function Overview() {
+export function DonorRegistrationOverview({ date }: { date: Date }) {
+  const { user } = useAuth();
   const stats = useSelector((state) => state.dashboard.stats);
+
+  // useEffect(() => {
+  //   dispatch(
+  //     getCommunityDashboardStatsDonorsGraphs({
+  //       user,
+  //       year: date.getFullYear(),
+  //     })
+  //   );
+  // }, [user, date]);
 
   // Calculate unique Y-axis ticks based on data to avoid repetition
   const getYTicks = (data: any) => {
@@ -19,7 +31,9 @@ export function Overview() {
     return ticks;
   };
 
-  const yTicks = getYTicks(stats?.monthlyRequests);
+  const yTicks = getYTicks(stats?.monthlyDonors);
+
+  devLog(yTicks, "yTickes, donor");
 
   return (
     <ChartContainer
@@ -32,7 +46,7 @@ export function Overview() {
       className="h-[350px]"
     >
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={stats?.monthlyRequests}>
+        <LineChart data={stats?.monthlyDonors}>
           <XAxis
             dataKey="name"
             stroke="#888888"

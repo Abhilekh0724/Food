@@ -698,3 +698,53 @@ export interface UsageTrend {
    */
   wasted: number;
 }
+
+/**
+ * Interface for a food item in the restaurant
+ */
+export interface FoodItem {
+  /**
+   * Unique identifier for the food item
+   */
+  id: string;
+
+  /**
+   * Name of the food item
+   */
+  name: string;
+
+  /**
+   * Category of the food item (e.g., Appetizer, Main Course, Dessert)
+   */
+  category: string;
+
+  /**
+   * Price of the food item
+   */
+  price: number;
+
+  /**
+   * Whether the food item is available
+   */
+  available: boolean;
+
+  /**
+   * Whether the food item is a special
+   */
+  special?: boolean;
+
+  /**
+   * Description of the food item
+   */
+  description?: string;
+
+  /**
+   * Date when the food item was added
+   */
+  addedDate?: string;
+
+  /**
+   * Optional image URL for the food item
+   */
+  imageUrl?: string;
+}

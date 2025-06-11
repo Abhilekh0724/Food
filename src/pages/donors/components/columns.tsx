@@ -39,7 +39,9 @@ const ActionsCell = ({ donor }: { donor: Donor }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigate(`/donors/edit/${donor?.donor_id}`)}>
+        <DropdownMenuItem
+          onClick={() => navigate(`/donors/edit/${donor?.donor_id}`)}
+        >
           Edit
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -48,7 +50,6 @@ const ActionsCell = ({ donor }: { donor: Donor }) => {
 };
 
 export const columns: ColumnDef<Donor>[] = [
-
   {
     id: "donor.donorId",
     accessorKey: "donorId",
@@ -62,7 +63,9 @@ export const columns: ColumnDef<Donor>[] = [
       );
     },
     cell: ({ row }) => (
-      <Link to={`/donors/${row.original.id}`}>{row.original.donorId}</Link>
+      <Link to={`/community/donors/${row.original.id}`}>
+        {row.original.donorId}
+      </Link>
     ),
   },
 
@@ -79,7 +82,9 @@ export const columns: ColumnDef<Donor>[] = [
       );
     },
     cell: ({ row }) => (
-      <Link to={`/donors/${row.original.id}`}>{row.original.username}</Link>
+      <Link to={`/community/donors/${row.original.id}`}>
+        {row.original.username}
+      </Link>
     ),
   },
 
@@ -95,9 +100,7 @@ export const columns: ColumnDef<Donor>[] = [
         />
       );
     },
-    cell: ({ row }) => (
-      <div>{row.original.bloodGroup}</div>
-    ),
+    cell: ({ row }) => <div>{row.original.bloodGroup}</div>,
   },
 
   {
@@ -106,7 +109,7 @@ export const columns: ColumnDef<Donor>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Email
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -122,7 +125,7 @@ export const columns: ColumnDef<Donor>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Phone
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -145,7 +148,9 @@ export const columns: ColumnDef<Donor>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{moment().diff(moment(row?.original?.dob), "years")} years</div>;
+      return (
+        <div>{moment().diff(moment(row?.original?.dob), "years")} years</div>
+      );
     },
   },
 
@@ -156,7 +161,7 @@ export const columns: ColumnDef<Donor>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Gender
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}

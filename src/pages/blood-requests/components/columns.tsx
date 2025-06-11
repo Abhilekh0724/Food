@@ -1,76 +1,9 @@
-import { ConfirmDialog } from "@/components/dialog/confirmation";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { BloodRequest } from "@/lib/types";
-import { deleteBloodRequest } from "@/store/features/blood-request-slice";
-import { dispatch, useSelector } from "@/store/store";
 import { ColumnDef } from "@tanstack/react-table";
-import { Check, MoreHorizontal, X } from "lucide-react";
 import moment from "moment";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { DataTableColumnHeader } from "./data-table-column-header";
-
-const ActionsCell = ({ bloodRequest }: { bloodRequest: BloodRequest }) => {
-  const navigate = useNavigate();
-
-  const [open, setOpen] = useState<boolean>(false); // Control dialog state
-
-  const loading = useSelector((state) => state.bloodRequest.isLoading);
-
-  const handleDelete = (id: string) => {
-    dispatch(
-      deleteBloodRequest({
-        id,
-        onClose: () => setOpen(false),
-      })
-    );
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => navigate(`/bloodRequests/${bloodRequest?.id}`)}
-        >
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={(e) => {
-            e.preventDefault();
-            setOpen(true);
-          }}
-        >
-          Delete
-        </DropdownMenuItem>
-
-        <Dialog onOpenChange={setOpen} open={open}>
-          <DialogTrigger asChild></DialogTrigger>
-          <ConfirmDialog
-            loading={loading}
-            title={`Delete ${bloodRequest?.attributes?.requestedBy?.data?.attributes?.username} bloodRequest?`}
-            onOk={() => handleDelete(bloodRequest?.id)}
-            onClose={() => setOpen(false)}
-          />
-        </Dialog>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
 
 export const columns: ColumnDef<BloodRequest>[] = [
   {
@@ -79,7 +12,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Requested ID" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -87,7 +20,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       );
     },
     cell: ({ row }) => (
-      <Link to={`/blood-requests/${row?.original?.id}`}>
+      <Link to={`/community/blood-needs/${row?.original?.id}`}>
         {row?.original?.attributes?.bloodRequestId}
       </Link>
     ),
@@ -98,7 +31,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="District" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -113,7 +46,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Name" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -129,7 +62,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Age" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -145,7 +78,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Gender" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -161,7 +94,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Blood Group" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -181,7 +114,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Blood Type" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -197,7 +130,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Need Before" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -218,7 +151,7 @@ export const columns: ColumnDef<BloodRequest>[] = [
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Units" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
@@ -229,20 +162,28 @@ export const columns: ColumnDef<BloodRequest>[] = [
   },
 
   {
-    accessorKey: "urgency",
     id: "urgency",
     header: ({ column }) => {
       return (
         <button
           className="flex items-center font-bold"
-        // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <DataTableColumnHeader column={column} title="Urgency" />
           {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
         </button>
       );
     },
-    cell: ({ row }) => <div>{row?.original?.attributes?.urgency}</div>,
+    cell: ({ row }) => {
+      const urgency = row?.original?.attributes?.urgency;
+      const badgeColor =
+        urgency === "Urgent"
+          ? "bg-red-100 text-red-800"
+          : urgency === "Medium"
+          ? "bg-yellow-100 text-yellow-800"
+          : "";
+      return <Badge className={badgeColor}>{urgency}</Badge>;
+    },
   },
 
   {
@@ -255,13 +196,9 @@ export const columns: ColumnDef<BloodRequest>[] = [
     cell: ({ row }) => (
       <div>
         {row?.original?.attributes?.isFulFilled ? (
-          <div className="bg-green-500 px-2 py-1 items-center rounded-full text-white flex justify-center">
-            Fulfilled
-          </div>
+          <Badge className="bg-green-100 text-green-800">Fulfilled</Badge>
         ) : (
-          <div className="bg-red-500 items-center rounded-full text-white flex justify-center px-2 py-1">
-            Not Fulfilled
-          </div>
+          <Badge className="bg-gray-100 text-gray-800">Not Fulfilled</Badge>
         )}
       </div>
     ),

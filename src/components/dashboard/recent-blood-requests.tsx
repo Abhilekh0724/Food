@@ -44,7 +44,8 @@ export function RecentBloodRequests() {
   return (
     <div className="space-y-6">
       {bloodRequests?.data?.map((bloodRequest, index) => (
-        <Link to={`blood-requests/${bloodRequest?.id}`}
+        <Link
+          to={`community/blood-needs/${bloodRequest?.id}`}
           key={index}
           className="border block rounded-lg p-6 shadow-md bg-white hover:shadow-lg transition-shadow duration-200"
         >
@@ -72,7 +73,8 @@ export function RecentBloodRequests() {
               </div>
               <div className="text-sm text-gray-600">
                 <span className="font-medium">Blood Group:</span>{" "}
-                {bloodRequest?.attributes?.requestedBloodGroup?.data?.attributes?.name || "N/A"}
+                {bloodRequest?.attributes?.requestedBloodGroup?.data?.attributes
+                  ?.name || "N/A"}
               </div>
               <div className="text-sm text-gray-600">
                 <span className="font-medium">Hospital:</span>{" "}
@@ -87,15 +89,17 @@ export function RecentBloodRequests() {
               </h3>
               <div className="text-sm text-gray-600">
                 <span className="font-medium">Requested By:</span>{" "}
-                {bloodRequest?.attributes?.requestedBy?.data?.attributes?.username || "N/A"}
+                {bloodRequest?.attributes?.requestedBy?.data?.attributes
+                  ?.username || "N/A"}
               </div>
               <div className="text-sm text-gray-600">
                 <span className="font-medium">Urgency:</span>{" "}
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bloodRequest?.attributes?.urgency === "urgent"
-                    ? "bg-red-100 text-red-800"
-                    : "bg-green-100 text-green-800"
-                    }`}
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    bloodRequest?.attributes?.urgency === "urgent"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-green-100 text-green-800"
+                  }`}
                 >
                   {bloodRequest?.attributes?.urgency}
                 </span>
@@ -103,12 +107,15 @@ export function RecentBloodRequests() {
               <div className="text-sm text-gray-600">
                 <span className="font-medium">Status:</span>{" "}
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bloodRequest?.attributes?.isFulfilled
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-yellow-100 text-yellow-800"
-                    }`}
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    bloodRequest?.attributes?.isFulfilled
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
                 >
-                  {bloodRequest?.attributes?.isFulfilled ? "Fulfilled" : "Pending"}
+                  {bloodRequest?.attributes?.isFulfilled
+                    ? "Fulfilled"
+                    : "Pending"}
                 </span>
               </div>
               <div className="text-sm text-gray-600">

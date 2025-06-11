@@ -53,4 +53,5 @@ export interface InitialStateI {
   singleData?: Record<string, any> | null;
   stats?: Record<string, any> | null;
   bloodBankStats?: Record<string, any> | null;
+  user?: Record<string, any> | null;
 }

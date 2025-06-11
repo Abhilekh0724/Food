@@ -197,7 +197,9 @@ export default function DonorPage() {
             }}
             className="w-full"
           />
-          <Button onClick={() => navigate("/donors/add")}>Add Donor</Button>
+          <Button onClick={() => navigate("/community/donors/add")}>
+            Add Donor
+          </Button>
         </div>
       </div>
 

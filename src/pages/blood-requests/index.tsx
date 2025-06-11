@@ -130,9 +130,7 @@ export default function BloodRequestPage() {
     },
   });
 
-  const breadcrumbItems = [
-    { label: "Blood Requests", href: "/blood-requests" },
-  ];
+  const breadcrumbItems = [{ label: "Blood Needs", href: "/blood-requests" }];
 
   return (
     <div className="w-full space-y-4">
@@ -148,19 +146,17 @@ export default function BloodRequestPage() {
             </Link>
           </Button>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">
-              Blood Requests
-            </h2>
+            <h2 className="text-3xl font-bold tracking-tight">Blood Needs</h2>
             <span className="text-sm">
-              Total records: {data?.meta?.pagination?.total} (blood requests
-              from your working districts)
+              Total records: {data?.meta?.pagination?.total} (blood needs from
+              your working districts)
             </span>
           </div>
         </div>
 
         <div className="flex items-center space-x-2 flex-1">
           <Input
-            placeholder="Search requests by request ID or patient's name ..."
+            placeholder="Search needs by request ID or patient's name ..."
             value={search}
             onChange={(event) => {
               setSearch(event.target.value);

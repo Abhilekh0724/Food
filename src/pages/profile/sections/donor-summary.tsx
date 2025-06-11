@@ -53,7 +53,7 @@ const DonorSummary = ({
               Blood Donated
             </div>
             <div className="text-2xl font-bold">
-              {totalBloodDonated?.toFixed(1)} Pints
+              {totalBloodDonated?.toFixed(1)} Units
             </div>
           </div>
           <div className="bg-muted/50 p-4 rounded-lg">

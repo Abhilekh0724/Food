@@ -96,11 +96,15 @@ export default function BloodRequestDetail() {
     const isFulfilled = fulfilledUnits >= totalUnits;
 
     if (isFulfilled) {
-      return <Badge className="bg-green-500">Fulfilled</Badge>;
+      return <Badge className="bg-green-100 text-green-800">Fulfilled</Badge>;
     } else if (fulfilledUnits > 0) {
-      return <Badge className="bg-amber-500">Partially Fulfilled</Badge>;
+      return (
+        <Badge className="bg-amber-100 text-amber-800">
+          Partially Fulfilled
+        </Badge>
+      );
     }
-    return <Badge className="bg-blue-500">Active</Badge>;
+    return <Badge className="bg-red-100 text-red-800">Active</Badge>;
   };
 
   // Get urgency badge
@@ -151,14 +155,18 @@ export default function BloodRequestDetail() {
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: "Blood Requests", href: "/blood-requests" },
-    { label: "Request Details", href: `/blood-requests/${requestData?.id}` },
+    { label: "Blood Needs", href: "/community/blood-needs" },
+    {
+      label: "Need Details",
+      href: `/community/blood-needs/${requestData?.id}`,
+    },
   ];
 
   // Get requester name
   const requester = requestData?.attributes?.requestedBy?.data;
-  const requesterName = `${requester?.attributes?.firstName || ""} ${requester?.attributes?.lastName || ""
-    }`.trim();
+  const requesterName = `${requester?.attributes?.firstName || ""} ${
+    requester?.attributes?.lastName || ""
+  }`.trim();
 
   return (
     <>
@@ -175,14 +183,14 @@ export default function BloodRequestDetail() {
             <div className="flex flex-col md:flex-row justify-between gap-4">
               <div className="flex items-center gap-3">
                 <Button variant="outline" size="icon" asChild>
-                  <Link to="/blood-requests">
+                  <Link to="/community/blood-needs">
                     <ChevronLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                   </Link>
                 </Button>
                 <div>
                   <h1 className="text-2xl font-bold">
-                    Blood Request {requestData?.attributes?.bloodRequestId}
+                    Blood Need {requestData?.attributes?.bloodRequestId}
                   </h1>
                   <p className="text-muted-foreground">
                     Created on{" "}
@@ -191,23 +199,20 @@ export default function BloodRequestDetail() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                {
-                  totalUnits - fulfilledUnits > 0 && (
-                    <>
-                      <Button size="sm" onClick={() => setNotifyModalOpen(true)}>
-                        <HelpingHand className="h-4 w-4 mr-2" />
-                        Notify Donors
-                      </Button>
+                {totalUnits - fulfilledUnits > 0 && (
+                  <>
+                    <Button size="sm" onClick={() => setNotifyModalOpen(true)}>
+                      <HelpingHand className="h-4 w-4 mr-2" />
+                      Notify Donors
+                    </Button>
 
-                      <NotifyDonorsModal
-                        open={notifyModalOpen}
-                        onOpenChange={setNotifyModalOpen}
-                        request={requestData}
-                      />
-                    </>
-                  )
-                }
-
+                    <NotifyDonorsModal
+                      open={notifyModalOpen}
+                      onOpenChange={setNotifyModalOpen}
+                      request={requestData}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -291,9 +296,9 @@ export default function BloodRequestDetail() {
                           {requestData?.attributes?.patientAge || "N/A"} years •{" "}
                           {requestData?.attributes?.patientGender
                             ? requestData.attributes.patientGender
-                              .charAt(0)
-                              .toUpperCase() +
-                            requestData.attributes.patientGender.slice(1)
+                                .charAt(0)
+                                .toUpperCase() +
+                              requestData.attributes.patientGender.slice(1)
                             : "N/A"}
                         </div>
                       </div>
@@ -424,16 +429,13 @@ export default function BloodRequestDetail() {
 
               {/* Right column - Tabs with Acceptors and Timeline */}
               <div className="md:col-span-2">
-
                 <Card>
                   <CardHeader>
                     <div className="flex justify-between items-center">
                       <CardTitle>Blood Donors</CardTitle>
                       <Badge
                         variant={
-                          fulfilledUnits >= totalUnits
-                            ? "default"
-                            : "outline"
+                          fulfilledUnits >= totalUnits ? "default" : "outline"
                         }
                         className={
                           fulfilledUnits >= totalUnits ? "bg-green-500" : ""
@@ -443,8 +445,8 @@ export default function BloodRequestDetail() {
                       </Badge>
                     </div>
                     <CardDescription>
-                      People who have donated or scheduled to donate for
-                      this request
+                      People who have donated or scheduled to donate for this
+                      request
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -458,8 +460,7 @@ export default function BloodRequestDetail() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {requestData?.attributes?.acceptors?.data
-                          ?.length ? (
+                        {requestData?.attributes?.acceptors?.data?.length ? (
                           requestData.attributes.acceptors.data.map(
                             (acceptor, index) => (
                               <TableRow key={index}>
@@ -468,13 +469,12 @@ export default function BloodRequestDetail() {
                                     <Avatar className="h-8 w-8">
                                       <AvatarImage
                                         src={
-                                          acceptor?.attributes?.acceptor
-                                            ?.data?.attributes?.avatarUrl ||
-                                          undefined
+                                          acceptor?.attributes?.acceptor?.data
+                                            ?.attributes?.avatarUrl || undefined
                                         }
                                         alt={
-                                          acceptor?.attributes?.acceptor
-                                            ?.data?.attributes?.username
+                                          acceptor?.attributes?.acceptor?.data
+                                            ?.attributes?.username
                                         }
                                       />
                                       <AvatarFallback className="text-xs bg-primary/10 text-primary">
@@ -486,17 +486,17 @@ export default function BloodRequestDetail() {
                                     </Avatar>
                                     <div>
                                       <div className="font-medium">
-                                        {acceptor?.attributes?.acceptor
-                                          ?.data?.attributes?.username ||
-                                          `Donor ${acceptor?.attributes?.acceptor
-                                            ?.data?.attributes
-                                            ?.username || index
+                                        {acceptor?.attributes?.acceptor?.data
+                                          ?.attributes?.username ||
+                                          `Donor ${
+                                            acceptor?.attributes?.acceptor?.data
+                                              ?.attributes?.username || index
                                           }`}
                                       </div>
                                       <div className="text-xs text-muted-foreground">
                                         ID:{" "}
-                                        {acceptor?.attributes?.acceptor
-                                          ?.data?.id || index}
+                                        {acceptor?.attributes?.acceptor?.data
+                                          ?.id || index}
                                       </div>
                                     </div>
                                   </div>

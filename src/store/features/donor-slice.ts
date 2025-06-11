@@ -28,7 +28,7 @@ const initialState: InitialStateI & { donationCount: number } = {
       },
     },
   },
-  donationCount: 0
+  donationCount: 0,
 };
 
 // Constants
@@ -45,12 +45,22 @@ const GET_DONATION_COUNT = "hbb/getDonationCount";
 // Thunks
 export const fetchDonors = createAsyncThunk(
   FETCH_DONORS,
-  async ({ params, setIsSearching }: ParamsI & { setIsSearching?: Dispatch<SetStateAction<boolean>> }, { rejectWithValue }) => {
+  async (
+    {
+      params,
+      setIsSearching,
+    }: ParamsI & { setIsSearching?: Dispatch<SetStateAction<boolean>> },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await api.get<ApiResponseI>("organizer-donors", {
         params,
       });
-      return { data: response.data.data, meta: response.data.meta, setIsSearching };
+      return {
+        data: response.data.data,
+        meta: response.data.meta,
+        setIsSearching,
+      };
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -95,7 +105,7 @@ export const createDonor = createAsyncThunk(
       donor,
       organizer,
       actionBy,
-      verifyDonor = false
+      verifyDonor = false,
     }: ParamsI & {
       donor: { user?: string; donorId: string };
       organizer?: string;
@@ -105,9 +115,13 @@ export const createDonor = createAsyncThunk(
     { rejectWithValue, dispatch }
   ) => {
     try {
-      const responseUser = await api.post<ApiResponseI>("users-permissions/users/createWithCustomFields", data, {
-        params,
-      });
+      const responseUser = await api.post<ApiResponseI>(
+        "users-permissions/users/createWithCustomFields",
+        data,
+        {
+          params,
+        }
+      );
 
       await api.post<ApiResponseI>(
         "donor-profiles",
@@ -161,9 +175,13 @@ export const updateDonor = createAsyncThunk(
   UPDATE_DONORS,
   async ({ data, params, id, navigate }: ParamsI, { rejectWithValue }) => {
     try {
-      const response = await api.put<ApiResponseI>(`users-permissions/users/${id}/updateWithCustomFields`, data, {
-        params,
-      });
+      const response = await api.put<ApiResponseI>(
+        `users-permissions/users/${id}/updateWithCustomFields`,
+        data,
+        {
+          params,
+        }
+      );
 
       console.log("first", response.data);
 
@@ -208,7 +226,7 @@ export const updateDonorStatus = createAsyncThunk(
   ) => {
     try {
       const response = await api.patch<ApiResponseI>(
-        `donors/${id}/enroll-status`,
+        `community/donors/${id}/enroll-status`,
         data,
         {
           params,
@@ -232,7 +250,7 @@ export const markComplete = createAsyncThunk(
   ) => {
     try {
       const response = await api.patch<ApiResponseI>(
-        `donors/${id}/complete-enroll`,
+        `community/donors/${id}/complete-enroll`,
         data,
         {
           params,

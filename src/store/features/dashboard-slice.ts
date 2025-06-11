@@ -9,10 +9,12 @@ import { ApiResponseI, InitialStateI } from "../interface";
 const initialState: InitialStateI = {
   isLoading: false,
   stats: {
-    staffsCount: 0,
+    eventsCount: 0,
     donorsCount: 0,
     brCount: 0,
-    monthlyRequests: []
+    monthlyRequests: [],
+    monthlyDonors: [],
+    monthlyEvents: [],
   },
   bloodBankStats: [
     { type: "A+", count: 0, color: "bg-red-500" },
@@ -23,8 +25,8 @@ const initialState: InitialStateI = {
     { type: "AB-", count: 0, color: "bg-red-400" },
     { type: "O+", count: 0, color: "bg-red-500" },
     { type: "O-", count: 0, color: "bg-red-400" },
-  ]
-}
+  ],
+};
 // Constants
 const COMMUNITY_DASHBAORD_STATS = "communityDashboard/stats";
 const BLOODBANK_DASHBAORD_STATS = "bloodBankDashboard/stats";
@@ -34,21 +36,6 @@ export const getCommunityDashboardStats = createAsyncThunk(
   COMMUNITY_DASHBAORD_STATS,
   async ({ user, year }: any, { rejectWithValue }) => {
     try {
-      const staffsResponse = await api.get<ApiResponseI>("organizer-members", {
-        params: {
-          pagination: {
-            page: 1,
-            pageSize: 1,
-          },
-          filters: {
-            organizer: {
-              id: user?.organizerProfile?.id,
-            },
-            role: "staff",
-          }
-        },
-      });
-
       const donorsResponse = await api.get<ApiResponseI>("organizer-donors", {
         params: {
           pagination: {
@@ -59,7 +46,7 @@ export const getCommunityDashboardStats = createAsyncThunk(
             organizer: {
               id: user?.organizerProfile?.id,
             },
-          }
+          },
         },
       });
 
@@ -74,22 +61,51 @@ export const getCommunityDashboardStats = createAsyncThunk(
               $in: user?.organizerProfile?.workingDistricts
                 ?.split(",")
                 ?.map((district: any) => district),
-            }
-          }
+            },
+          },
+        },
+      });
+
+      const eventsResponse = await api.get<ApiResponseI>("events", {
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+          },
+          filters: {
+            organizer: user?.organizerProfile?.id,
+          },
         },
       });
 
       const currentYear = year;
       const months = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ];
 
-      // Fetch counts for each month
-      const monthlyCounts: any = await Promise.all(
+      // Fetch blood need counts for each month
+      const monthlyBloodNeedCounts: any = await Promise.all(
         months.map(async (month, index): Promise<any> => {
           const startDate = new Date(currentYear, index, 1).toISOString();
-          const endDate = new Date(currentYear, index + 1, 0, 23, 59, 59).toISOString();
+          const endDate = new Date(
+            currentYear,
+            index + 1,
+            0,
+            23,
+            59,
+            59
+          ).toISOString();
 
           const response = await api.get<ApiResponseI>("blood-requests", {
             params: {
@@ -110,15 +126,79 @@ export const getCommunityDashboardStats = createAsyncThunk(
         })
       );
 
-      // Result: [{ month: "Jan", count: 10 }, { month: "Feb", count: 5 }, ...]
-      console.log(monthlyCounts, "count monthly");
+      // Fetch donor registration counts for each month
+      const monthlyDonorRegisrationCounts: any = await Promise.all(
+        months.map(async (month, index): Promise<any> => {
+          const startDate = new Date(currentYear, index, 1).toISOString();
+          const endDate = new Date(
+            currentYear,
+            index + 1,
+            0,
+            23,
+            59,
+            59
+          ).toISOString();
+
+          const response = await api.get<ApiResponseI>("organizer-donors", {
+            params: {
+              pagination: { pageSize: 1 }, // Only need count, not data
+              filters: {
+                createdAt: {
+                  $gte: startDate,
+                  $lte: endDate,
+                },
+              },
+            },
+          });
+
+          return {
+            name: month,
+            total: response.data.meta?.pagination?.total ?? 0, // Fallback to 0 if undefined
+          };
+        })
+      );
+
+      // Fetch events counts for each month
+      const monthlyEventCounts: any = await Promise.all(
+        months.map(async (month, index): Promise<any> => {
+          const startDate = new Date(currentYear, index, 1).toISOString();
+          const endDate = new Date(
+            currentYear,
+            index + 1,
+            0,
+            23,
+            59,
+            59
+          ).toISOString();
+
+          const response = await api.get<ApiResponseI>("events", {
+            params: {
+              pagination: { pageSize: 1 }, // Only need count, not data
+              filters: {
+                organizer: user?.organizerProfile?.id,
+                createdAt: {
+                  $gte: startDate,
+                  $lte: endDate,
+                },
+              },
+            },
+          });
+
+          return {
+            name: month,
+            total: response.data.meta?.pagination?.total ?? 0, // Fallback to 0 if undefined
+          };
+        })
+      );
 
       return {
-        staffsCount: staffsResponse.data.meta?.pagination.total,
+        eventsCount: eventsResponse.data.meta?.pagination.total,
         donorsCount: donorsResponse.data.meta?.pagination.total,
         brCount: bRqsResponse.data.meta?.pagination.total,
-        monthlyRequests: monthlyCounts
-      }
+        monthlyRequests: monthlyBloodNeedCounts,
+        monthlyDonors: monthlyDonorRegisrationCounts,
+        monthlyEvents: monthlyEventCounts,
+      };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -140,33 +220,36 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "A+"
+              name: "A+",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
-
 
       const BPlusBGResponse = await api.get<ApiResponseI>("blood-pouches", {
         params: {
@@ -179,30 +262,34 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "B+"
+              name: "B+",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
 
@@ -217,30 +304,34 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "AB+"
+              name: "AB+",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
 
@@ -255,30 +346,34 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "A-"
+              name: "A-",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
 
@@ -293,30 +388,34 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "B-"
+              name: "B-",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
 
@@ -331,30 +430,34 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "AB-"
+              name: "AB-",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
 
@@ -369,30 +472,34 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "O+"
+              name: "O+",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
 
@@ -407,43 +514,79 @@ export const getBloodBankDashboardStats = createAsyncThunk(
               id: user?.organizerProfile?.id,
             },
             bloodGroup: {
-              name: "O-"
+              name: "O-",
             },
-            $or: [{
-              isUsed: false,
-              isWasted: false,
-              bloodPouchRequests: {
-                $or: [
-                  {
-                    id: { $null: true }
-                  },
-                  {
-                    $and: [{
-                      requestType: 'Transfer'
+            $or: [
+              {
+                isUsed: false,
+                isWasted: false,
+                bloodPouchRequests: {
+                  $or: [
+                    {
+                      id: { $null: true },
                     },
                     {
-                      status: {
-                        $ne: 'Approve',
-                      }
-                    }]
-                  }
-                ],
-              }
-            }]
-          }
+                      $and: [
+                        {
+                          requestType: "Transfer",
+                        },
+                        {
+                          status: {
+                            $ne: "Approve",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
       });
 
       return [
-        { type: "A+", count: APlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
-        { type: "A-", count: AMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
-        { type: "B+", count: BPlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
-        { type: "B-", count: BMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
-        { type: "AB+", count: ABPlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
-        { type: "AB-", count: ABMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
-        { type: "O+", count: OPlusBGResponse.data.meta?.pagination.total, color: "bg-red-500" },
-        { type: "O-", count: OMinusBGResponse.data.meta?.pagination.total, color: "bg-red-400" },
-      ]
+        {
+          type: "A+",
+          count: APlusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-500",
+        },
+        {
+          type: "A-",
+          count: AMinusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-400",
+        },
+        {
+          type: "B+",
+          count: BPlusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-500",
+        },
+        {
+          type: "B-",
+          count: BMinusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-400",
+        },
+        {
+          type: "AB+",
+          count: ABPlusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-500",
+        },
+        {
+          type: "AB-",
+          count: ABMinusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-400",
+        },
+        {
+          type: "O+",
+          count: OPlusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-500",
+        },
+        {
+          type: "O-",
+          count: OMinusBGResponse.data.meta?.pagination.total,
+          color: "bg-red-400",
+        },
+      ];
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }

@@ -72,7 +72,7 @@ const DonationHistory = ({ donationHistory }: { donationHistory: any }) => {
                 </TableCell>
                 <TableCell>{donation.location}</TableCell>
                 <TableCell className="text-right">
-                  {donation.amount} pints
+                  {donation.amount} units
                 </TableCell>
               </TableRow>
             ))}

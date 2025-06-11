@@ -42,12 +42,22 @@ const MARK_COMPLETE = "hbb/completeDonor";
 // Thunks
 export const fetchDonors = createAsyncThunk(
   FETCH_NOTIFICATIONS,
-  async ({ params, setIsSearching }: ParamsI & { setIsSearching?: Dispatch<SetStateAction<boolean>> }, { rejectWithValue }) => {
+  async (
+    {
+      params,
+      setIsSearching,
+    }: ParamsI & { setIsSearching?: Dispatch<SetStateAction<boolean>> },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await api.get<ApiResponseI>("organizer-donors", {
         params,
       });
-      return { data: response.data.data, meta: response.data.meta, setIsSearching };
+      return {
+        data: response.data.data,
+        meta: response.data.meta,
+        setIsSearching,
+      };
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -74,14 +84,17 @@ export const createNotification = createAsyncThunk(
     {
       data,
       onClose,
-      actionBy
+      actionBy,
     }: ParamsI & {
       actionBy: string | undefined;
     },
     { rejectWithValue, dispatch }
   ) => {
     try {
-      const responseUser = await api.post<ApiResponseI>("strapi-plugin-fcm/fcm-notifications", { data });
+      const responseUser = await api.post<ApiResponseI>(
+        "strapi-plugin-fcm/fcm-notifications",
+        { data }
+      );
 
       dispatch(
         createActivity({
@@ -103,8 +116,6 @@ export const createNotification = createAsyncThunk(
     }
   }
 );
-
-
 
 export const updateDonorProfile = createAsyncThunk(
   UPDATE_NOTIFICATION,
@@ -138,7 +149,7 @@ export const updateDonorStatus = createAsyncThunk(
   ) => {
     try {
       const response = await api.patch<ApiResponseI>(
-        `donors/${id}/enroll-status`,
+        `community/donors/${id}/enroll-status`,
         data,
         {
           params,
@@ -162,7 +173,7 @@ export const markComplete = createAsyncThunk(
   ) => {
     try {
       const response = await api.patch<ApiResponseI>(
-        `donors/${id}/complete-enroll`,
+        `community/donors/${id}/complete-enroll`,
         data,
         {
           params,
@@ -240,14 +251,15 @@ const donorSlice = createSlice({
       })
       .addCase(createNotification.fulfilled, (state, action) => {
         state.isLoading = false;
-        action.payload.onClose &&
-          action.payload.onClose();
+        action.payload.onClose && action.payload.onClose();
       })
-      .addCase(createNotification.rejected, (state, action: PayloadAction<any>) => {
-        state.isLoading = false;
-        toast.error(action.payload || "Failed");
-      });
-
+      .addCase(
+        createNotification.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.isLoading = false;
+          toast.error(action.payload || "Failed");
+        }
+      );
 
     // TODO: update donor status
 

@@ -322,7 +322,7 @@ export function NotifyDonorsModal({
                     <Textarea
                       id="message"
                       className="w-full"
-                      placeholder="Write a message to potential donors about this blood request..."
+                      placeholder="Write a message to potential donors about this blood need..."
                       rows={5}
                       {...register("message")}
                     />
@@ -332,7 +332,7 @@ export function NotifyDonorsModal({
                   </div>
                 </div>
                 <div className="grid grid-cols-4 items-start gap-4">
-                  <Label className="text-right">Request Info</Label>
+                  <Label className="text-right">Need Info</Label>
                   <div className="col-span-3 text-sm space-y-2">
                     <p>
                       <strong>Blood Type:</strong>{" "}
